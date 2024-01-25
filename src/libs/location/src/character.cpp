@@ -825,6 +825,20 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
         headLookPointTarget = CVECTOR(x, y, z);
     }
         return 1;
+		
+	// evganat - вывод текущей анимации
+	case MSG_CHARACTER_GETCURANIMATION:	{
+		MODEL *m = Model();
+		if (!m)
+			return 0;
+		Animation *a = m->GetAnimation();
+		if (!a)
+			return 0;
+		const auto *const c = a->Player(0).GetAction();
+		message.ScriptVariablePointer()->Set(c);
+	}
+		return 1;
+		
     default:
         return ChlProcessMessage(messageID, message);
     }
