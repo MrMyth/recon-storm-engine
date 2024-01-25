@@ -463,6 +463,8 @@ DX9RENDER::DX9RENDER()
     vViewRelationPos = CVECTOR(0.f, 0.f, 0.f);
     vWordRelationPos = -vViewRelationPos;
     bUseLargeBackBuffer = false;
+	
+	bNewFovCalculation = true;	// evganat - по умолчанию правильный vfov
 }
 
 static bool texLog = false;
@@ -510,6 +512,8 @@ bool DX9RENDER::Init()
         bDropVideoConveyor = ini->GetInt(nullptr, "DropVideoConveyor", 0) != 0;
         texLog = ini->GetInt(nullptr, "texture_log", 0) == 1;
         bUseLargeBackBuffer = ini->GetInt(nullptr, "UseLargeBackBuffer", 0) != 0;
+		
+		bNewFovCalculation = ini->GetInt(nullptr, "NewFovCalculation", 0) == 1;	// evganat - выбор формулы из engine.ini
 
         bWindow = ini->GetInt(nullptr, "full_screen", 1) == 0;
 
@@ -2104,7 +2108,17 @@ bool DX9RENDER::SetPerspective(float perspective, float fAspectRatio)
         fAspectRatio = static_cast<float>(screen_size.y) / screen_size.x;
     }
     aspectRatio = fAspectRatio;
-    const float fov_vert = 2.f * atanf(tanf(perspective / 2.f) * fAspectRatio); // Vertical field of view  angle, in radians
+	
+    // evganat - по заявка выводим формулу vfov в engine.ini
+	float fov_vert;
+	if(bNewFovCalculation)
+	{
+		fov_vert = 2.f * atanf(tanf(perspective / 2.f) * fAspectRatio);
+	}
+	else
+	{
+		fov_vert = perspective * fAspectRatio;
+	}
 
     const float w = 1.0f / tanf(fov_horiz * 0.5f);
     const float h = 1.0f / tanf(fov_vert * 0.5f);

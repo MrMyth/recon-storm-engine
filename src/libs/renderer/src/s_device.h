@@ -391,6 +391,8 @@ class DX9RENDER : public VDX9RENDER
     CVECTOR vViewRelationPos;
 
     bool bUseLargeBackBuffer;
+	
+	bool bNewFovCalculation;	// evganat - выбор формулы vfov
 
     bool resourcesReleased = false;
 
