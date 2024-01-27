@@ -120,6 +120,10 @@ bool FONT::Init(const char *font_name, const char *iniName)
     shadowOffsetX_ = ini->GetInt(font_name, "Shadow_offsetx", 2);
     shadowOffsetY_ = ini->GetInt(font_name, "Shadow_offsety", 2);
     spacebarWidth_ = static_cast<int32_t>(ini->GetInt(font_name, "Spacebar", 8) * horizontalAspectRatio_);
+	
+	// evganat - кернинг
+	if (ini->TestKey(font_name, "Kerning", nullptr))
+        bUseKerning = true;
 
     ini->CaseSensitive(true);
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)
@@ -158,6 +162,17 @@ bool FONT::Init(const char *font_name, const char *iniName)
         charDescriptors_[codepoint].Pos.y2 = static_cast<float>(height_); //((int32_t)(ltmp*m_fAspectRatioV));
         charDescriptors_[codepoint].Tuv.y2 =
             charDescriptors_[codepoint].Tuv.y1 + static_cast<float>(ltmp - 1.f) / static_cast<float>(textureSizeY_);
+			
+		// evganat - кернинг
+		if(bUseKerning)
+		{
+			if (!MakeLong(&pData, &ltmp))
+				throw std::runtime_error("invalid font record");
+			charDescriptors_[codepoint].kern_l = static_cast<float>(static_cast<int32_t>(ltmp * horizontalAspectRatio_));
+			if (!MakeLong(&pData, &ltmp))
+				throw std::runtime_error("invalid font record");
+			charDescriptors_[codepoint].kern_r = static_cast<float>(static_cast<int32_t>(ltmp * horizontalAspectRatio_));
+		}
     }
     ini->CaseSensitive(false);
 
@@ -266,8 +281,25 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
             pos.y1 *= scale;
             pos.y2 *= scale;
         }
-        OffsetFRect(pos, static_cast<float>(x) + xoffset, static_cast<float>(y));
-        xoffset += pos.x2 - pos.x1 + symbolInterval_ * scale;
+		
+        // evganat - кернинг
+		if(bUseKerning)
+		{
+			float kern_l = charDescriptors_[Codepoint].kern_l;
+			float kern_r = charDescriptors_[Codepoint].kern_r;
+			if(scale != 1.f)
+			{
+				kern_l *= scale;
+				kern_r *= scale;
+			}
+			OffsetFRect(pos, static_cast<float>(x) + xoffset - kern_l, static_cast<float>(y));
+			xoffset += pos.x2 - pos.x1 - kern_l - kern_r + symbolInterval_ * scale;
+		}
+		else
+		{
+			OffsetFRect(pos, static_cast<float>(x) + xoffset, static_cast<float>(y));
+			xoffset += pos.x2 - pos.x1 + symbolInterval_ * scale;
+		}
 
         if (Codepoint == ' ')
         {

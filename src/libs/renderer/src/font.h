@@ -72,4 +72,7 @@ class FONT final
     bool drawShadows_ = false;
 
     bool initialized_ = false;
+	
+	// evganat - кернинг
+	bool bUseKerning = false;
 };
