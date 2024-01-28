@@ -13,6 +13,10 @@ struct FONT_SYMBOL
 {
     FLOAT_RECT Pos;
     FLOAT_RECT Tuv;
+	
+	// evganat - добавляем кернинг
+	float kern_l;
+	float kern_r;
 };
 
 class FONT final
