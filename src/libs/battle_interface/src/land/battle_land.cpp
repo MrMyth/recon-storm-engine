@@ -116,7 +116,13 @@ uint64_t BATTLE_LAND_INTERFACE::ProcessMessage(MESSAGE &message)
     case BI_MSG_CARE_COMMANDLIST_UPDATE:
         m_pManSign->SetUpdate();
         break;
-    }
+	
+	// evganat - выставляем новый текст
+	case MSG_BATTLE_LAND_TEXTINFO_SET: {
+		BIUtils::FillTextInfoArray(m_pRS, AttributesPointer ? AttributesPointer->GetAttributeClass("textinfo") : nullptr, m_TextInfo);
+		BIUtils::PrintTextInfoArray(m_TextInfo);
+	}
+	}
     return 0;
 }
 
