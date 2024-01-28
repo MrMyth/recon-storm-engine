@@ -192,7 +192,7 @@ class SoundService : public VSoundService
     void SoundRelease(TSD_ID _id) override;
     void SoundSetVolume(TSD_ID _id, float _volume) override;
     bool SoundIsPlaying(TSD_ID _id) override;
-    float SoundGetPosition(TSD_ID _id) override;
+    int32_t SoundGetPosition(TSD_ID _id) override;	// evganat - float to int
     void SoundRestart(TSD_ID _id) override;
     void SoundResume(TSD_ID _id, int32_t _time = 0) override;
 

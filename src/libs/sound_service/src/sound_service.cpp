@@ -683,7 +683,7 @@ void SoundService::SoundResume(TSD_ID _id, int32_t _time /* = 0*/)
     CHECKFMODERR(sound.channel->setPaused(false));
 }
 
-float SoundService::SoundGetPosition(TSD_ID _id)
+int32_t SoundService::SoundGetPosition(TSD_ID _id)	// evganat - float to int
 {
     if (_id.index() >= numActiveSounds)
         return 0;
@@ -695,7 +695,10 @@ float SoundService::SoundGetPosition(TSD_ID _id)
 
     unsigned int SoundPositionInMilisecond;
     CHECKFMODERR(sound.channel->getPosition(&SoundPositionInMilisecond, FMOD_TIMEUNIT_MS));
-    return 0;
+	
+	//evganat - исправляем звуковой месседж
+	return SoundPositionInMilisecond;
+//    return 0;
 }
 
 void SoundService::SetCameraPosition(const CVECTOR &_cameraPosition)

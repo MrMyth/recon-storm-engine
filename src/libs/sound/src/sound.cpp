@@ -208,7 +208,7 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
         break;
     case MSG_SOUND_GET_POSITION:
         id = message.Long();
-        outValue = static_cast<uint32_t>(soundService->SoundGetPosition(id) * 100.0f);
+        outValue = static_cast<uint32_t>(soundService->SoundGetPosition(id));	// evganat - раньше здесь на 100.0f умножалось
         break;
     case MSG_SOUND_RESTART:
         id = message.Long();

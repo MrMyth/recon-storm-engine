@@ -95,7 +95,7 @@ class VSoundService : public SERVICE
     virtual void SoundRelease(TSD_ID _id) = 0;
     virtual void SoundSetVolume(TSD_ID _id, float _volume) = 0;
     virtual bool SoundIsPlaying(TSD_ID _id) = 0;
-    virtual float SoundGetPosition(TSD_ID _id) = 0;
+    virtual int32_t SoundGetPosition(TSD_ID _id) = 0;	// evganat - float to int
     virtual void SoundRestart(TSD_ID _id) = 0;
     virtual void SoundResume(TSD_ID _id, int32_t _time = 0) = 0;
 
