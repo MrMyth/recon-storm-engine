@@ -77,4 +77,9 @@ class ShipInfoImages
     CVECTOR m_vUpDir;
     CVECTOR m_vRightDir;
     float m_fImgScale;
+	
+	// evganat - режимы отображения баров
+	bool m_bShowMainBar;
+	bool m_bShowCompanionBar;
+	bool m_bShowOtherBar;
 };

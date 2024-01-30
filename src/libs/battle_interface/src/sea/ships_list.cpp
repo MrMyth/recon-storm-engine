@@ -252,8 +252,10 @@ void SHIP_DESCRIBE_LIST::Add(int32_t mainChrIndex, int32_t chIdx, ATTRIBUTES *pC
     }
 
     // if(pChAttr->GetAttributeAsDword("MainCharacter",0)!=0)
+    pr->isMainShip = false;	// evganat - режимы отображения баров
     if (mainChrIndex == chIdx)
     {
+		pr->isMainShip = true;	// evganat - режимы отображения баров
         mainCharacter = pr;
         pMainShipAttr = pShipAttr;
     }

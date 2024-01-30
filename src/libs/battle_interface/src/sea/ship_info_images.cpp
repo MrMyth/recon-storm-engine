@@ -123,6 +123,11 @@ void ShipInfoImages::Init(ATTRIBUTES *pAttr)
 
     // size of progress images
     BIUtils::ReadPosFromAttr(pAttr, "ProgressSize", m_fpProgressSize.x, m_fpProgressSize.y, 2.f, 0.5f);
+	
+	// evganat - режимы отображения баров
+	m_bShowMainBar = pAttr->GetAttributeAsDword("main_bar", 1) != 0;
+	m_bShowCompanionBar = pAttr->GetAttributeAsDword("companion_bar", 1) != 0;
+	m_bShowOtherBar = pAttr->GetAttributeAsDword("other_bar", 1) != 0;
 }
 
 void ShipInfoImages::CheckAndRecreateBuffers(int32_t nShipQ)
@@ -292,6 +297,18 @@ bool ShipInfoImages::IsEnableShowShipInfo(SHIP_DESCRIBE_LIST::SHIP_DESCR *pSD) c
     pRS->GetCamera(vpos, vang, fpersp);
     if (~(pSD->pShip->GetPos() - vpos) > MAX_SHIPINFO_DIST_IN_POW2)
         return false;
+	
+	// evganat - режимы отображения баров
+	if(pSD->isMainShip)
+	{
+		return m_bShowMainBar;
+	}
+	if(pSD->isMyShip)
+	{
+		return m_bShowCompanionBar;
+	}
+	if(!m_bShowOtherBar)
+		return false;
 
     return true;
 }

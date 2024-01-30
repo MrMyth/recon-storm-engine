@@ -9,6 +9,7 @@ class SHIP_DESCRIBE_LIST
     struct SHIP_DESCR
     {
         bool isMyShip;
+		bool isMainShip;	// evganat - режимы отображения баров
         bool isTransferableShip;
         bool isDead;
         int32_t relation;
