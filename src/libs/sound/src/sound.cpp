@@ -134,9 +134,9 @@ uint64_t SOUND::ProcessMessage(MESSAGE &message)
             {
                 if (message.GetCurrentFormatType())
                     loopPauseTime = message.Long();
-                if (message.GetCurrentFormatType())
-                    volume = message.Float();
             }
+            if (message.GetCurrentFormatType())
+                volume = message.Float();
         }
         else
         {
