@@ -125,12 +125,53 @@ bool FONT::Init(const char *font_name, const char *iniName)
 	if (ini->TestKey(font_name, "Kerning", nullptr))
         bUseKerning = true;
 
+	// evganat - цветной текст
+	if (ini->TestKey(font_name, "Color", nullptr))
+		bUseColor = true;
+		
     ini->CaseSensitive(true);
     for (codepoint = 30; codepoint < USED_CODES; codepoint++)
     {
         char utf8[5];
         utf8::CodepointToUtf8(utf8, codepoint);
-        if (codepoint >= 'a' && codepoint <= 'z')
+
+		// evganat - цветной текст
+		if(bUseColor)
+		{
+			sprintf_s(key_name, "color_%s", utf8);
+			if(ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
+			{
+				pData = buffer;
+				if (!MakeLong(&pData, &ltmp))
+					throw std::runtime_error("invalid font record");
+				charDescriptors_[codepoint].a = static_cast<int32_t>(ltmp);
+				if (!MakeLong(&pData, &ltmp))
+					throw std::runtime_error("invalid font record");
+				charDescriptors_[codepoint].r = static_cast<int32_t>(ltmp);
+				if (!MakeLong(&pData, &ltmp))
+					throw std::runtime_error("invalid font record");
+				charDescriptors_[codepoint].g = static_cast<int32_t>(ltmp);
+				if (!MakeLong(&pData, &ltmp))
+					throw std::runtime_error("invalid font record");
+				charDescriptors_[codepoint].b = static_cast<int32_t>(ltmp);
+				charDescriptors_[codepoint].colorstart = true;
+				continue;
+			}
+			else
+			{
+				sprintf_s(key_name, "colorend_%s", utf8);
+				if(ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
+				{
+					pData = buffer;
+					if (!MakeLong(&pData, &ltmp))
+						throw std::runtime_error("invalid font record");
+					charDescriptors_[codepoint].colorend = true;
+					continue;
+				}
+			}
+		}
+		
+		if (codepoint >= 'a' && codepoint <= 'z')
         {
             sprintf_s(key_name, "char_%s_", utf8);
         }
@@ -140,6 +181,7 @@ bool FONT::Init(const char *font_name, const char *iniName)
             sprintf_s(key_name, "char_%s", utf8);
         if (!ini->ReadString(font_name, key_name, buffer, sizeof(buffer), ""))
             continue;
+            
         pData = buffer;
         if (!MakeLong(&pData, &ltmp))
             throw std::runtime_error("invalid font record");
@@ -257,7 +299,11 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
     vertexBuffer_->Lock(0, sizeof(FONT_CHAR_VERTEX) * utf8length * SYM_VERTEXS, (void **)&pVertex, 0);
 
     xoffset = 0;
-
+    
+    // evganat - цветной текст
+	bool bColorText = false;
+	uint32_t curColor;
+	
     for (int i = 0, curLetter = 0; i < s_num; i += utf8::u8_inc(data_PTR + i), curLetter++)
     {
         Assert(curLetter < utf8length);
@@ -271,9 +317,26 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
             }
             continue;
         }
-
+        
+        // evganat - цветной текст
+		if(bUseColor)
+		{
+			if(charDescriptors_[Codepoint].colorstart)
+			{
+				bColorText = true;
+				curColor = ARGB(charDescriptors_[Codepoint].a, charDescriptors_[Codepoint].r, charDescriptors_[Codepoint].g, charDescriptors_[Codepoint].b);
+				continue;
+			}
+			if(charDescriptors_[Codepoint].colorend)
+			{
+				bColorText = false;
+				continue;
+			}
+		}
+		
         n = curLetter * 6;
         FLOAT_RECT pos = charDescriptors_[Codepoint].Pos;
+        
         if (scale != 1.f)
         {
             pos.x1 *= scale;
@@ -341,9 +404,18 @@ int32_t FONT::UpdateVertexBuffer(int32_t x, int32_t y, char *data_PTR, int utf8l
         pVertex[n + 4].tv = tuv.y2;
         pVertex[n + 5].tv = tuv.y1;
 
-        pVertex[n + 0].color = pVertex[n + 1].color = pVertex[n + 2].color = pVertex[n + 3].color =
-            pVertex[n + 4].color = pVertex[n + 5].color = color;
-
+        // evganat - цветной текст
+		if(bColorText)
+		{
+			pVertex[n + 0].color = pVertex[n + 1].color = pVertex[n + 2].color = pVertex[n + 3].color =
+				pVertex[n + 4].color = pVertex[n + 5].color = curColor;
+		}
+		else
+		{
+			pVertex[n + 0].color = pVertex[n + 1].color = pVertex[n + 2].color = pVertex[n + 3].color =
+				pVertex[n + 4].color = pVertex[n + 5].color = color;
+		}
+		
         pVertex[n + 0].rhw = pVertex[n + 1].rhw = pVertex[n + 2].rhw = pVertex[n + 3].rhw = pVertex[n + 4].rhw =
             pVertex[n + 5].rhw = scale;
     }

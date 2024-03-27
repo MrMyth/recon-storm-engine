@@ -17,6 +17,14 @@ struct FONT_SYMBOL
 	// evganat - добавляем кернинг
 	float kern_l;
 	float kern_r;
+	
+	// evganat - добавляем цвет
+	uint8_t a;
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	bool colorstart;
+	bool colorend;
 };
 
 class FONT final
@@ -79,4 +87,7 @@ class FONT final
 	
 	// evganat - кернинг
 	bool bUseKerning = false;
+	
+	// evganat - цветной текст
+	bool bUseColor = false;
 };
