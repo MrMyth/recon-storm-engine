@@ -18,6 +18,7 @@ CINODE::CINODE()
     m_bLockStatus = false;
     m_bBreakPress = false;
     m_bMouseSelect = false;
+	m_bMouseUnselect = false;	// evganat - отмена выбора по наведению мыши
     m_nodeName = nullptr;
     m_bShowGlowCursor = true;
     m_strHelpTextureFile = nullptr;

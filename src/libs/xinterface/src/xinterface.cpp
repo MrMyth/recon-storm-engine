@@ -1401,6 +1401,11 @@ void XINTERFACE::SFLB_CreateNode(INIFILE *pOwnerIni, INIFILE *pUserIni, const ch
         pNewNod->m_bBreakPress = pNewNod->GetIniBool(pUserIni, sNodeName, pOwnerIni, sNodeType, "bBreakCommand", false);
         if (pNewNod->GetIniBool(pUserIni, sNodeName, pOwnerIni, sNodeType, "moveMouseDoSelect", false))
             pNewNod->m_bMouseSelect = true;
+        
+        // evganat - отмена выбора по наведению мыши
+		if (pNewNod->GetIniBool(pUserIni, sNodeName, pOwnerIni, sNodeType, "moveMouseDoUnselect", false))
+            pNewNod->m_bMouseUnselect = true;
+            
         // if( pNewNod->ReadIniString(pUserIni,sNodeName, pOwnerIni,sNodeType, "command", param,sizeof(param)-1, "") )
         // do
         if (usedini && usedini->ReadString(pNewNod->m_nodeName, "command", param, sizeof(param) - 1, ""))
@@ -1919,7 +1924,17 @@ void XINTERFACE::DrawNode(CINODE *nod, uint32_t Delta_Time, int32_t startPrior, 
             if (nod == m_pCurNode)
             {
                 if (m_pGlowCursorNode && m_pGlowCursorNode->m_bUse)
-                    m_pGlowCursorNode->Draw(false, Delta_Time);
+				{
+					CINODE *mouseNod = nod->FindNode(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);	// evganat - пробуем ограничиться миганием под курсором
+					if(nod == mouseNod || !nod->IsGlowCursorBack())
+					{
+						m_pGlowCursorNode->Draw(false, Delta_Time);
+					}
+					else
+					{
+						m_pGlowCursorNode->Draw(false, 0);
+					}
+				}
             }
             nod->Draw(nod == m_pCurNode, Delta_Time);
         }
@@ -2330,12 +2345,21 @@ void XINTERFACE::MouseMove()
         vMouse[0].pos.y = vMouse[2].pos.y = fYMousePos - MouseSize.y / 2;
         vMouse[1].pos.y = vMouse[3].pos.y = fYMousePos + MouseSize.y / 2;
 
+		// evganat - отмена выбора по наведению мыши
+		bool bUnselect = true;
+		auto *pOldNode = m_pCurNode;
+
         m_pCurToolTipNode = nullptr;
         pNod = m_pNodes ? m_pNodes->FindNode(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse) : nullptr;
         while (pNod != nullptr)
         {
             if (pNod->m_bUse)
             {
+            	// evganat - отмена выбора по наведению мыши
+				if(pNod == pOldNode)
+				{
+					bUnselect = false;
+				}
                 if (!m_pCurToolTipNode && pNod->CheckByToolTip(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse))
                     m_pCurToolTipNode = pNod;
                 if (!pNod->m_bLockedNode)
@@ -2344,6 +2368,7 @@ void XINTERFACE::MouseMove()
                         pNod->MouseThis(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
                     if (pNod->m_bMouseSelect && pNod->m_bSelected)
                     {
+                    	bUnselect = false;
                         SetCurNode(pNod);
                         break;
                     }
@@ -2353,6 +2378,9 @@ void XINTERFACE::MouseMove()
                 break;
             pNod = pNod->m_next->FindNode(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
         }
+        // evganat - отмена выбора по наведению мыши
+		if(pOldNode != nullptr && pOldNode->m_bMouseUnselect && bUnselect && pOldNode == m_pCurNode)
+			m_pCurNode = nullptr;
     }
     else
     {

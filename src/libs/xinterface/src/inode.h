@@ -347,6 +347,7 @@ class CINODE
     bool m_bBreakPress;
     bool m_bLockedNode;
     bool m_bMouseSelect;
+	bool m_bMouseUnselect;	// evganat - отмена выбора по наведению мыши
 
     int32_t m_nDoDelay;
     int m_nCurrentCommandNumber;
