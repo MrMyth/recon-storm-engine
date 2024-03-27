@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 
     std::shared_ptr<storm::OSWindow> window =
         storm::OSWindow::Create(width, height, preferred_display, fullscreen, show_borders);
-    window->SetTitle("Sea Dogs");
+    window->SetTitle("ReConstruction 1.5.0");	// evganat - Реконструкция
     window->Subscribe(HandleWindowEvent);
     window->Show();
     core_private->SetWindow(window);
