@@ -131,7 +131,14 @@ XI_TableCellDescribe::XI_TableCellDescribe(CXI_TABLE *pTable, XI_TableLineDescri
 
 XI_TableCellDescribe::~XI_TableCellDescribe()
 {
-    m_aImage.clear();
+    // evganat - тест
+//    m_aImage.clear();
+	for(int32_t i=0; i<10; i++)
+	{
+		m_aImage[i].pImage = nullptr;
+		m_aImage[i].offset.x = 0;
+		m_aImage[i].offset.y = 0;
+	}    
     m_aStrings.clear();
     m_pLine = nullptr;
     m_pTable = nullptr;
@@ -143,14 +150,12 @@ void XI_TableCellDescribe::Draw(float fLeft, float fTop)
 
     fLeft += m_pTable->m_pntSpaceSize.x;
     fTop += m_pTable->m_pntSpaceSize.y;
-    if (m_aImage.size() > 0)
-    {
-        const auto nX = static_cast<int32_t>(fLeft) + m_nLeftLineWidth;
-        const auto nY = static_cast<int32_t>(fTop) + m_nTopLineHeight;
-        for (n = 0; n < m_aImage.size(); n++)
-            if (m_aImage[n].pImage)
-                m_aImage[n].pImage->Draw(nX + m_aImage[n].offset.x, nY + m_aImage[n].offset.y, IPType_LeftTop);
-    }
+    // evganat - тест      
+ 	const auto nX = static_cast<int32_t>(fLeft) + m_nLeftLineWidth;
+    const auto nY = static_cast<int32_t>(fTop) + m_nTopLineHeight;
+	for (n=0; n<10; n++)
+    	if (m_aImage[n].pImage)
+        	m_aImage[n].pImage->Draw(nX + m_aImage[n].offset.x, nY + m_aImage[n].offset.y, IPType_LeftTop);
 
     fLeft += m_TextOffset.x;
     fTop += m_TextOffset.y;
@@ -175,12 +180,19 @@ void XI_TableCellDescribe::Draw(float fLeft, float fTop)
 
 void XI_TableCellDescribe::SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bHeader)
 {
+	int32_t i;
     if (!pAttr)
     {
         // empty cell
         m_aStrings.clear();
-        m_aImage.clear();
-        return;
+        // evganat - тест
+		for(i=0; i<10; i++)
+		{
+			m_aImage[i].pImage = nullptr;
+			m_aImage[i].offset.x = 0;
+			m_aImage[i].offset.y = 0;
+		}
+		return;
     }
     ATTRIBUTES *pA;
     const char *pcStr, *pcTmpStr;
@@ -195,31 +207,34 @@ void XI_TableCellDescribe::SetData(int32_t nColIndex, ATTRIBUTES *pAttr, bool bH
     pA = pAttr->GetAttributeClass("icon");
     if (pA)
     {
-        if (m_aImage.empty())
-            m_aImage.push_back(ImgDescribe{});
         LoadImageParam(&m_aImage[nIconQuantity], pA);
         nIconQuantity++;
     }
     else
     {
         char tmpaname[16];
-        while (true)
-        {
-            sprintf_s(tmpaname, sizeof(tmpaname), "icon%d", nIconQuantity + 1);
-            pA = pAttr->GetAttributeClass(tmpaname);
-            if (!pA)
-                break;
-            if (static_cast<int32_t>(m_aImage.size()) <= nIconQuantity)
-                m_aImage.push_back(ImgDescribe{});
-            LoadImageParam(&m_aImage[nIconQuantity], pA);
-            nIconQuantity++;
-        }
+        for (i=0; i<10; i++)	// evganat - пытаюсь заставить работать несколько картинок в таблице
+		{
+			sprintf_s(tmpaname, sizeof(tmpaname), "icon%d", i+1);
+			pA = pAttr->GetAttributeClass(tmpaname);
+			if(!pA)
+				break;
+			LoadImageParam(&m_aImage[i], pA);	// если не сработает, попробую убрать отсюда ссылку
+			nIconQuantity++;
+		}	
     }
     // delete unnecessary pictures
-    while (static_cast<int32_t>(m_aImage.size()) > nIconQuantity)
-        m_aImage.erase(m_aImage.begin() + nIconQuantity);
-
-    // read the line
+    // evganat - тест
+	if(nIconQuantity<10)
+	{
+		for(i=nIconQuantity; i<10; i++)
+		{
+			m_aImage[i].pImage = nullptr;
+			m_aImage[i].offset.x = 0;
+			m_aImage[i].offset.y = 0;
+		}
+	}
+	// read the line
     m_dwColor =
         pAttr->GetAttributeAsDword("color", bHeader ? m_pTable->m_dwFontTitleColor : m_pTable->m_dwFontCellColor);
     m_fScale = pAttr->GetAttributeAsFloat("scale", bHeader ? m_pTable->m_fFontTitleScale : m_pTable->m_fFontCellScale);
@@ -380,6 +395,7 @@ CXI_TABLE::CXI_TABLE()
     m_SelectImg.DisableDraw(true);
     m_pHeader = nullptr;
     m_bDoColsSelect = false;
+	m_bStepScroll = false;	// evganat - убрал прокрутку в два шага
 
     m_bFirstFrame = true;
     m_bVariableLineHeight = false;
@@ -841,6 +857,8 @@ void CXI_TABLE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, const c
     m_bDoColsSelect = GetIniBool(ini1, name1, ini2, name2, "iscolselect", false);
     if (m_bDoColsSelect)
         m_nSelectColIndex = 0;
+	
+	m_bStepScroll = GetIniBool(ini1, name1, ini2, name2, "stepscroll", false);	// evganat - убрал прокрутку в два шага
 
     // border
     if (ReadIniString(ini1, name1, ini2, name2, "bordericongroup", param, sizeof(param), ""))
@@ -1224,7 +1242,8 @@ void CXI_TABLE::UpdateTableCells()
         nNewSel = m_nLineQuantity - 1;
     if (nNewSel != m_nSelectIndex)
     {
-        m_nSelectIndex = nNewSel;
+        if(!m_bStepScroll || m_bFirstFrame)	// evganat - убираю прокрутку в два шага
+			m_nSelectIndex = nNewSel;	
         UpdateSelectImage();
     }
 }

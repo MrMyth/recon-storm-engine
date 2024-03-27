@@ -63,7 +63,7 @@ class XI_TableCellDescribe
     int32_t m_nTopLineHeight;
 
     std::vector<StrDescribe> m_aStrings;
-    std::vector<ImgDescribe> m_aImage;
+    ImgDescribe m_aImage[10];
 
   public:
     int32_t m_nColIndex;
@@ -192,6 +192,7 @@ class CXI_TABLE : public CINODE
     CXI_IMAGE m_SelectImg;
     bool m_bDoColsSelect;
     int32_t m_nSelectColIndex;
+	bool m_bStepScroll;	// evganat - убираю прокрутку в два шага
 
     std::string m_sBorderIconGroupName;
     int32_t m_idBorderTexture;
