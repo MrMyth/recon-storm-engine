@@ -116,6 +116,7 @@ class LocationCamera : public Entity
     float radInertia;    // Inertia of approaching
 
     bool isSpecialMode;
+	bool bSpecialMode;	// evganat - спецрежим камеры
     bool isLockFPMode;
     bool isViewExecute;
 

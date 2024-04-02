@@ -67,6 +67,7 @@ LocationCamera::LocationCamera()
     isLockFPMode = false;
     isLookMode = false;
     isSpecialMode = false;
+	bSpecialMode = false;	// evganat - спецрежим камеры
     dAx = dAy = 0.0f;
     dynamic_fog.isOn = false;
 
@@ -127,7 +128,7 @@ void LocationCamera::Realize(uint32_t delta_time)
     // Camera mode
     CONTROL_STATE cs;
     core.Controls->GetControlState("ChrCamSpecMode", cs);
-    isSpecialMode = cs.state == CST_ACTIVE;
+    isSpecialMode = (bSpecialMode || (cs.state == CST_ACTIVE));	// evganat - перевод камеры в спецрежим
     // Time period
     const auto dltTime = delta_time * 0.001f;
     if (isSleep)
@@ -456,6 +457,11 @@ uint64_t LocationCamera::ProcessMessage(MESSAGE &message)
         forcedPos = true;
 
         return 1;
+	
+	// evganat - перевод камеры в спецрежим
+	case MSG_CAMERA_SPECIALMODE:
+		bSpecialMode = message.Long() != 0;
+		return 1;
 
     default:
         ;
