@@ -821,9 +821,12 @@ void DIALOG::Realize(uint32_t Delta_Time)
             ATTRIBUTES *pA = AttributesPointer->GetAttributeClass(m_sLinksAttrName);	// evganat - поставил выбор атрибута
             if (pA)
                 pA = pA->GetAttributeClass(linkDescribe_.GetSelectedLine());
-            if (pA)
+			ATTRIBUTES *pL = AttributesPointer->GetAttributeClass("links");	// evganat - убираем костыли
+			if(pL)
+				pL = pL->GetAttributeClass(linkDescribe_.GetSelectedLine());
+            if (pA && pL)
             {
-                const char *goName = pA->GetAttribute("go");
+                const char *goName = pL->GetAttribute("go");	// evganat
                 if (!goName || storm::iEquals(goName, selectedLinkName))
                     EmergencyExit();
                 else
