@@ -108,6 +108,10 @@ class DIALOG final : public Entity
     };
 
     DlgTextDescribe m_DlgText;
+	
+	// evganat - название атрибутов для текста и линков
+	std::string m_sTextAttrName;
+	std::string m_sLinksAttrName;
 
     storm::dialog::DlgLinkDescribe linkDescribe_;
 

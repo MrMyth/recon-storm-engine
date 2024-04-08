@@ -550,6 +550,8 @@ void DIALOG::LoadFromIni()
     GetPointFromIni(pIni.get(), "DIALOG", "charnameoffset", m_fpCharNameTextOffset);
     m_fpCharNameTextOffset.x = GetScrWidth(m_fpCharNameTextOffset.x);
     m_fpCharNameTextOffset.y = GetScrHeight(m_fpCharNameTextOffset.y);
+	
+	// evganat - здесь можно поставить выбор в инишнике способа перевода диалога
 }
 
 void DIALOG::GetRectFromIni(INIFILE *ini, const char *pcSection, const char *pcKey, FRECT &frect)
@@ -593,6 +595,18 @@ bool DIALOG::Init()
 
     //----------------------------------------------------------
     LoadFromIni();
+	
+	// evganat - здесь выбор атрибутов
+	m_sTextAttrName = "text";
+	VDATA *vdT = core.Event("Dialog_GetTextAttributePointer");
+    if (vdT)
+		m_sTextAttrName = vdT->GetString();
+	
+	m_sLinksAttrName = "links";
+	VDATA *vdL = core.Event("Dialog_GetLinksAttributePointer");
+    if (vdL)
+		m_sLinksAttrName = vdL->GetString();
+	
 
     CreateBack();
     FillBack();
@@ -804,7 +818,7 @@ void DIALOG::Realize(uint32_t Delta_Time)
         if (m_DlgText.IsLastPage())
         {
             // showing answer options
-            ATTRIBUTES *pA = AttributesPointer->GetAttributeClass("links");
+            ATTRIBUTES *pA = AttributesPointer->GetAttributeClass(m_sLinksAttrName);	// evganat - поставил выбор атрибута
             if (pA)
                 pA = pA->GetAttributeClass(linkDescribe_.GetSelectedLine());
             if (pA)
@@ -863,7 +877,7 @@ uint32_t DIALOG::AttributeChanged(ATTRIBUTES *pA)
     if (par != nullptr)
     {
         const char *parname = par->GetThisName();
-        if (parname != nullptr && storm::iEquals(parname, "Links"))
+        if (parname != nullptr && storm::iEquals(parname, m_sLinksAttrName))	// evganat - поставил выбор атрибута
             parLinks = true;
     }
 
@@ -930,9 +944,9 @@ void DIALOG::UpdateDlgTexts()
     if (!AttributesPointer)
         return;
 
-    const std::string &text = AttributesPointer->GetAttribute("Text");
+    const std::string &text = AttributesPointer->GetAttribute(m_sTextAttrName);	// evganat - поставил выбор атрибута
     m_DlgText.ChangeText(text);
-    linkDescribe_.ChangeText(AttributesPointer->GetAttributeClass("Links"));
+    linkDescribe_.ChangeText(AttributesPointer->GetAttributeClass(m_sLinksAttrName));	// evganat - поставил выбор атрибута
 
     m_bDlgChanged = false;
 }
