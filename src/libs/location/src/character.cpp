@@ -2927,7 +2927,17 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
                                 }
                                 if (isEnemyHitByGunfire)
                                 {
-                                    chr->Hit(fgt_hit_fire);
+									// evganat - ошеломление
+									int32_t resStun = 1;
+									vd = core.Event("Check_ChrStun", "iis", GetId(), enemy, "fire");
+									if (vd)
+									{
+										vd->Get(resStun);
+									}
+									if (resStun == 1)
+									{
+										chr->Hit(fgt_hit_fire);
+									}
                                 }
                             }
                             core.Event("Location_CharacterFire", "iifl", GetId(), enemy, kDist,
@@ -4440,7 +4450,7 @@ void Character::UpdateAnimation()
                     isFired = false;
                     break;
                 case fgt_hit_attack: { // The reaction of hitting a character putting him into the stall
-                    if (stunChance)
+                /*    if (stunChance)
                     {
                         if (rand() % 100 >= stunChance)
                         {
@@ -4454,7 +4464,7 @@ void Character::UpdateAnimation()
                         {
                             break;
                         }
-                    }
+                    }	*/
 
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(hit[fgtSetIndex].name, hit[fgtSetIndex].tblend, 0.0f, 1.0f, true)))
@@ -4497,7 +4507,7 @@ void Character::UpdateAnimation()
                     }
                     break;
                 case fgt_hit_fire: { // The reaction from the shot, putting him into stall
-                    if (stunChance)
+                 /*   if (stunChance)
                     {
                         if (rand() % 100 >= stunChance)
                         {
@@ -4511,8 +4521,7 @@ void Character::UpdateAnimation()
                         {
                             break;
                         }
-                    }
-
+                    }	*/					
                     core.Send_Message(blade, "ll", MSG_BLADE_TRACE_OFF, 0);
                     if (!(isSet = SetAction(hitFire.name, hitFire.tblend, 0.0f, 0.0f, true)))
                     {
@@ -5100,7 +5109,18 @@ inline void Character::CheckAttackHit(bool isGunBlade)
                     core.Event("Event_ChrSnd_Hit", "i", fc.c->GetId());
                 }
             }
-            fc.c->Hit(hitReaction);
+			// evganat - ошеломление
+			int32_t resStun = 1;
+			VDATA *vdd = core.Event("Check_ChrStun", "iis", GetId(), fc.c->GetId(), aname);
+            if (vdd)
+            {
+				vdd->Get(resStun);
+            }
+			if (resStun == 1)
+            {
+				fc.c->Hit(hitReaction);
+            }
+			
             int blockTime = -1;
             if (isBlocked)
             {
