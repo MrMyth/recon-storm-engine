@@ -712,7 +712,7 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
         if (bTryFire && wantToFire && isFireEnable)
         {
             if (dst < NPC_FIGHT_FIRE_DIST * NPC_FIGHT_FIRE_DIST &&
-                (dst > NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST || fightLevel > 0.6f))
+                (dst > NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST))
             {
                 if (IsGunLoad())
                 {
