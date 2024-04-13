@@ -2050,10 +2050,15 @@ void Character::Move(float dltTime)
         // Moving
         const float spd = dltTime * speed * k;
         CVECTOR moveVec(sinf(ay) * spd, 0.0f, cosf(ay) * spd);
+		if(strafeMove > 0.5f || strafeMove < -0.5f)
+		{
+			float kBack = 1.0f;
+			if(spd < 0.0f)
+				kBack = -1.0f;
+			moveVec += CVECTOR(moveVec.z, 0.0f, -moveVec.x) * strafeMove * kBack;
+			moveVec *= sqrtf(2.0f) * 0.5f;
+		}
         curPos += moveVec;
-        if (spd < 0.0f)
-            moveVec = -moveVec;
-        curPos += CVECTOR(moveVec.z, 0.0f, -moveVec.x) * (strafeMove * 0.8f);
         curPos += impulse * dltTime;
         const float kStrafe = dltTime * 8.0f;
         bool noStrafe = true;
