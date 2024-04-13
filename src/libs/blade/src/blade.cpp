@@ -233,7 +233,7 @@ bool BLADE::Init()
     if (col == nullptr)
         throw std::runtime_error("No service: COLLIDE");
 
-    core.AddToLayer(REALIZE, GetId(), 65550);
+    core.AddToLayer(REALIZE, GetId(), 65529);
 
     rs = static_cast<VDX9RENDER *>(core.GetService("dx9render"));
     if (!rs)

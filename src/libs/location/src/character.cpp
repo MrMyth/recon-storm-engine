@@ -5331,7 +5331,7 @@ void Character::UpdateWeapons()
     }
     else
     {
-        core.AddToLayer(REALIZE, blade, 65550);
+        core.AddToLayer(REALIZE, blade, 65529);
     }
 }
 
