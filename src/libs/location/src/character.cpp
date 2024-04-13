@@ -2037,6 +2037,9 @@ void Character::Move(float dltTime)
             a->Player(1).SetSpeed(a->Player(1).GetDefSpeed() * k);
         }
     }
+	// evganat - фикс стрейфа в диалоге
+	if(isDialog)
+		strafeMove = 0.0f;
     // Current position
     oldPos = curPos;
     if (!isJump)
