@@ -197,7 +197,8 @@
 #define MSG_CHARACTER_HEADLOOK_POINT 30383      // "lfff" follow a point
 
 // evganat - новые месседжи
-#define MSG_CHARACTER_GETCURANIMATION 30384	// le
+#define MSG_CHARACTER_GETCURANIMATION 30384	// "le"
+#define MSG_CHARACTER_STOPSTRAFE 30385 // "l"
 
 // Setting tasks for the character
 #define MSG_NPCHARACTER_SETTASK 30400

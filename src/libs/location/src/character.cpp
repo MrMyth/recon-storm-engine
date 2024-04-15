@@ -838,7 +838,12 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
 		message.ScriptVariablePointer()->Set(c);
 	}
 		return 1;
-		
+	
+	// evganat - месседж для остановки стрейфа в интерфейсах, диалогах и прочем, использовать только для pchar
+	case MSG_CHARACTER_STOPSTRAFE: {
+		strafeMove = 0.0f;
+	}
+		return 1;
     default:
         return ChlProcessMessage(messageID, message);
     }
@@ -2037,9 +2042,6 @@ void Character::Move(float dltTime)
             a->Player(1).SetSpeed(a->Player(1).GetDefSpeed() * k);
         }
     }
-	// evganat - фикс стрейфа в диалоге
-	if(isDialog)
-		strafeMove = 0.0f;
     // Current position
     oldPos = curPos;
     if (!isJump)
