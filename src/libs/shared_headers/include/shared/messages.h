@@ -199,6 +199,7 @@
 // evganat - новые месседжи
 #define MSG_CHARACTER_GETCURANIMATION 30384	// "le"
 #define MSG_CHARACTER_STOPSTRAFE 30385 // "l"
+#define MSG_CHARACTER_VIEWSTRPOS 30386 // "lfffsfff"
 
 // Setting tasks for the character
 #define MSG_NPCHARACTER_SETTASK 30400

@@ -193,7 +193,8 @@ void Location::Realize(uint32_t delta_time)
             continue;
         // Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f/%.0f", message[i].hit,
         // message[i].hp);
-        Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
+     // Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%.0f", message[i].hit);
+		Print(message[i].p, 10.0f, 0, message[i].alpha, message[i].c, 0.8f, "%s", message[i].stextinfo.c_str()); // evganat - новый принт
     }
     // Drawing bars over characters
     if (bDrawBars)
@@ -1088,6 +1089,11 @@ void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, fl
     message[curMessage].alpha = 1.0f;
     message[curMessage].hit = hit;
     message[curMessage].hp = curhp;
+	// evganat - поддержка числового месседжа
+	char buf[30];
+	sprintf(buf, "%.0f", hit);
+	message[curMessage].stextinfo = buf;
+	
     float k = 0.0f;
     if (maxhp > 0.0f)
         k = curhp / maxhp;
@@ -1102,6 +1108,32 @@ void Location::AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, fl
     const float b = b2 + (b1 - b2) * k;
     message[curMessage].c =
         (static_cast<int32_t>(r * 255.0f) << 16) | (static_cast<int32_t>(g * 255.0f) << 8) | static_cast<int32_t>(b * 255.0f);
+}
+
+// evganat - вывод текста над персонажем
+void Location::AddUniversalMessage(const CVECTOR &pos3D, std::string stextinfo, float colR, float colG, float colB) // попытаемся сменить float на string 31.07.22
+{
+	curMessage++;
+    if (curMessage >= sizeof(message) / sizeof(DmgMessage))
+        curMessage = 0;
+    message[curMessage].p = pos3D;
+    message[curMessage].alpha = 1.0f;
+    message[curMessage].stextinfo = stextinfo; // переводим string& в char* 31.07.22 // уже не нужно 01.08.22
+    if (colR > 255.0f)
+		colR = 255.0f;
+	if (colR < 0.0f)
+		colR = 0.0f;
+	if (colG > 255.0f)
+		colG = 255.0f;
+	if (colG < 0.0f)
+		colG = 0.0f;
+	if (colB > 255.0f)
+		colB = 255.0f;
+	if (colB < 0.0f)
+		colB = 0.0f;
+
+    message[curMessage].c =
+        (static_cast<int32_t>(colR) << 16) | (static_cast<int32_t>(colG) << 8) | static_cast<int32_t>(colB);
 }
 
 // Draw bars above the enemy in this frame

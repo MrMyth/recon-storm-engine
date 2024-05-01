@@ -43,6 +43,7 @@ class Location : public Entity
         CVECTOR p;
         float alpha;
         float hit, hp;
+		std::string stextinfo; // evganat - добавил текстовый месседж
         uint32_t c;
     };
 
@@ -125,6 +126,10 @@ class Location : public Entity
 
     // Add a damage message
     void AddDamageMessage(const CVECTOR &pos3D, float hit, float curhp, float maxhp);
+	
+	// evganat - текстовый месседж
+	void AddUniversalMessage(const CVECTOR &pos3D, std::string stextinfo, float colR, float colG, float colB);
+	
     // Draw bars above the enemy in this frame
     void DrawEnemyBars(const CVECTOR &pos, float hp, float energy, float alpha);
 

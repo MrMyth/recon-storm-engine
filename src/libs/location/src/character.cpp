@@ -844,6 +844,23 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
 		strafeMove = 0.0f;
 	}
 		return 1;
+	
+	// evganat - месседж для вывода всплывающего текста над персонажем
+	case MSG_CHARACTER_VIEWSTRPOS:	{
+		auto *const location = GetLocation();
+        float posX = message.Float();
+        float posZ = message.Float();
+		float overhead = message.Float();
+		const std::string &textinfo = message.String();
+		float colR = message.Float();
+		float colG = message.Float();
+		float colB = message.Float();
+		const char *stextinfo = textinfo.c_str();
+		
+        location->AddUniversalMessage(curPos + CVECTOR(posX, height+overhead, posZ), stextinfo, colR, colG, colB);
+    }
+        return 1;
+		
     default:
         return ChlProcessMessage(messageID, message);
     }
