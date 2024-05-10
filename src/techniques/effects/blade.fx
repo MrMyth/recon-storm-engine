@@ -6,7 +6,7 @@ technique Blade
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
         SrcBlend = srcalpha;
-        DestBlend = one;
+        DestBlend = invsrcalpha;
         ColorArg1[0] = diffuse;
         ColorArg2[0] = texture;
         ColorOp[0] = modulate;

@@ -62,7 +62,7 @@ void BLADE::BLADE_INFO::DrawBlade(VDX9RENDER *rs, unsigned int blendValue, MODEL
         }
         else
         {
-            bladeNode->SetTechnique("AnimationBlend");
+            bladeNode->SetTechnique("Blade");
         }
         int32_t sti = -1;
         auto idBlade = manNode->geo->FindName(locatorName);
@@ -281,7 +281,7 @@ void BLADE::Realize(uint32_t Delta_Time)
         }
         else
         {
-            gunNode->SetTechnique("AnimationBlend");
+            gunNode->SetTechnique("Blade");
         }
         sti = -1;
         auto idGun = manNode->geo->FindName(gunLocName);
@@ -627,7 +627,7 @@ void BLADE::TIEITEM_INFO::DrawItem(VDX9RENDER *rs, unsigned int blendValue, MODE
         }
         else
         {
-            mdlNode->SetTechnique("AnimationBlend");
+            mdlNode->SetTechnique("Blade");
         }
         int32_t sti = -1;
         auto idLoc = manNode->geo->FindName(locatorName);
