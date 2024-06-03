@@ -693,6 +693,9 @@ class Character : public Entity
     CVECTOR headLookPointTarget;
     float curHeadAX;
     float curHeadAY;
+	
+	// evganat - призраки
+	float fGhost;
 
     [[nodiscard]] bool CheckShotOnlyEnemyTest() const;
 

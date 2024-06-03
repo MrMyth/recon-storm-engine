@@ -300,6 +300,9 @@ void Character::RTuner::Set(MODEL *model, VDX9RENDER *rs)
     if (camAlpha > 1.0f)
         camAlpha = 1.0f;
     auto a = camAlpha * chrAlpha * alpha;
+	//evganat - призраки
+	if(character->fGhost > 0.0f)
+		a = character->fGhost;
     if (!isVisible)
         a = 0.0f;
     if (a < 0.5f)
@@ -327,14 +330,21 @@ void Character::RTuner::Set(MODEL *model, VDX9RENDER *rs)
     }
     else
     {
-        if (a >= 1.0f)
-        {
-            n->SetTechnique("Animation");
-        }
-        else
-        {
-            n->SetTechnique("AnimationBlend");
-        }
+		if(character->fGhost > 0.0f)
+		{
+			n->SetTechnique("AnimationGhost");
+		}
+		else
+		{
+			if (a >= 1.0f)
+			{
+				n->SetTechnique("Animation");
+			}
+			else
+			{
+				n->SetTechnique("AnimationBlend");
+			}
+		}
     }
     if (auto *const location = character->GetLocation())
     {
@@ -617,6 +627,9 @@ Character::Character()
     headLookPointTarget = 0.0f;
     curHeadAX = 0.0f;
     curHeadAY = 0.0f;
+	
+	// evganat - призраки
+	fGhost = 0.0f;
 }
 
 Character::~Character()
@@ -686,6 +699,10 @@ bool Character::Init()
     core.Send_Message(core.GetEntityId("CharactersGroups"), "sis", "MoveCharacter", GetId(), group);
     SetSignModel();
     SetSignTechnique();
+	// evganat - призраки
+	if(AttributesPointer)
+		fGhost = AttributesPointer->GetAttributeAsFloat("Ghost", 0.0f);
+	
     return PostInit();
 }
 

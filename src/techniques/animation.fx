@@ -14,6 +14,26 @@ technique Animation
     }
 }
 
+technique AnimationGhost
+{
+	pass p0
+    {
+        Lighting = true;
+
+        ColorOp[0] = modulate2x;
+        ColorOp[1] = disable;
+
+        AlphaOp[0] = modulate;
+        AlphaArg1[0] = tfactor;
+        AlphaOp[1] = disable;
+
+        AlphaTestEnable = false;
+        AlphaBlendEnable = true;
+        SrcBlend = srcalpha;
+        DestBlend = invsrcalpha;
+    }
+}
+
 technique AnimationBlend
 {
     pass p0
