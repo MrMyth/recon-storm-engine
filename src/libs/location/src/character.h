@@ -438,6 +438,8 @@ class Character : public Entity
     CVECTOR GetEnemyDirForImpulse();
 
     bool PriorityActionIsJump() const;
+	
+	void SetAnimations();	// evganat - выставляем анимации
 
   protected:
     // Find a character who was hit by a pistol kDist = 1..0
@@ -591,6 +593,8 @@ class Character : public Entity
     ActionCharacter recoil;            // Bounce back
     ActionCharacter strafe_l;          // Bounce to the left
     ActionCharacter strafe_r;          // Bounce to the right
+	ActionCharacter normal_to_fight;	// evganat - переделал боевой режим
+	ActionCharacter fight_to_normal;	// evganat - переделал боевой режим
     std::optional<int32_t> stunChance; // Is the stun allowed after the enemy's blow
     // Logical state
     FightAction fgtCurType;   // Current action type

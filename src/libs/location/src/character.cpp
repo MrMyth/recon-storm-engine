@@ -527,6 +527,8 @@ Character::Character()
         sprintf_s(buf, sizeof(buf) - 1, "parry_%i", i + 1);
         parry[i].SetName(buf);
     }
+	normal_to_fight.SetName(CHARACTER_NORM_TO_FIGHT);
+	fight_to_normal.SetName(CHARACTER_FIGHT_TO_NORM);
     numAttackFast = 3;
     numAttackForce = 4;
     numAttackRound = 2;
@@ -882,6 +884,107 @@ uint64_t Character::ProcessMessage(MESSAGE &message)
         return ChlProcessMessage(messageID, message);
     }
     return 0;
+}
+
+// evganat - выставляем анимации
+void Character::SetAnimations()
+{
+	VDATA *vd = core.Event("Character_SetAnimationTag", "i", GetId());
+    std::string tag = "";
+    if (vd)
+    {
+		tag = vd->GetString();
+        if (tag == "stop")
+			return;
+    }
+
+	std::string buf;
+    // Combat mode
+    // Standing action in combat mode
+	numFightActionIdles = 8;
+	for (int32_t i = 0; i < numFightActionIdles; i++)
+    {
+		buf = std::format("fight stand_{}{}", i+1, tag);
+		actionFightIdle[i].SetName(buf.c_str());
+	}
+    // Walking forward in combat mode
+	buf = "fight walk"+tag;
+    fightwalk.SetName(buf.c_str());
+    // Walking back in combat mode
+	buf = "fight back walk"+tag;
+    fightbackwalk.SetName(buf.c_str());
+    // Attacks Blocks Feints Parry
+    numAttackFast = 3;
+    numAttackForce = 4;
+    numAttackRound = 1;
+    numAttackBreak = 1;
+    numAttackFeint = 2;
+    numParry = 4;
+	numHits = 3;
+    for (int32_t i = 0; i < numAttackFast; i++)
+    {
+		buf = std::format("attack_fast_{}{}", i+1, tag);
+		attackFast[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numAttackForce; i++)
+    {
+		buf = std::format("attack_force_{}{}", i+1, tag);
+		attackForce[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numAttackRound; i++)
+    {
+		buf = std::format("attack_round_{}{}", i+1, tag);
+		attackRound[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numAttackBreak; i++)
+    {
+		buf = std::format("attack_break_{}{}", i+1, tag);
+		attackBreak[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numAttackFeint; i++)
+    {
+		buf = std::format("attack_feint_{}{}", i+1, tag);
+		attackFeint[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numAttackFeint; i++)
+    {
+		buf = std::format("attack_feintc_{}{}", i+1, tag);
+		attackFeintC[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numHits; i++)
+    {
+		buf = std::format("hit_attack_{}{}", i+1, tag);
+		hit[i].SetName(buf.c_str());
+	}
+	for (int32_t i = 0; i < numParry; i++)
+    {
+		buf = std::format("parry_{}{}", i+1, tag);
+		parry[i].SetName(buf.c_str());
+	}
+	buf = "hit_feint"+tag;
+    hitFeint.SetName(buf.c_str());
+	buf = "hit_parry"+tag;
+    hitParry.SetName(buf.c_str());
+	buf = "hit_round"+tag;
+    hitRound.SetName(buf.c_str());
+	buf = "hit_fire"+tag;
+    hitFire.SetName(buf.c_str());
+	buf = "block"+tag;
+    block.SetName(buf.c_str());
+	buf = "block_hit"+tag;
+    blockhit.SetName(buf.c_str());
+	buf = "block_break"+tag;
+    blockbreak.SetName(buf.c_str());
+	buf = "recoil"+tag;
+    recoil.SetName(buf.c_str());
+	buf = "strafeleft"+tag;
+    strafe_l.SetName(buf.c_str());
+	buf = "straferight"+tag;
+    strafe_r.SetName(buf.c_str());
+	buf = "Normal to fight"+tag;
+	normal_to_fight.SetName(buf.c_str());
+	buf = "Fight to normal"+tag;
+	fight_to_normal.SetName(buf.c_str());
 }
 
 // Changing an attribute
@@ -1402,10 +1505,11 @@ bool Character::SetFightMode(bool _isFight, bool isPlayAni)
     isFight = _isFight;
     if (isFight)
     {
+		SetAnimations();	// evganat - выставляем анимации
         radius = radiusFgt;
         if (isPlayAni)
         {
-            if (!SetPriorityAction(CHARACTER_NORM_TO_FIGHT))
+            if (!SetPriorityAction(normal_to_fight.name))
             {
                 core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
                 core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
@@ -1422,7 +1526,7 @@ bool Character::SetFightMode(bool _isFight, bool isPlayAni)
         radius = radiusNrm;
         if (isPlayAni)
         {
-            if (!SetPriorityAction(CHARACTER_FIGHT_TO_NORM))
+            if (!SetPriorityAction(fight_to_normal.name))
             {
                 core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
                 core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
@@ -2695,7 +2799,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
     isTurnLock = false;
     if (priorityAction.name && storm::iEquals(actionName, priorityAction.name))
     {
-        if (storm::iEquals(priorityAction.name, CHARACTER_NORM_TO_FIGHT))
+        if (storm::iEquals(priorityAction.name, normal_to_fight.name))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
@@ -2706,7 +2810,7 @@ void Character::ActionEvent(const char *actionName, Animation *animation, int32_
                 animation->Player(0).SetPosition(1.0f);
             }
         }
-        else if (storm::iEquals(priorityAction.name, CHARACTER_FIGHT_TO_NORM))
+        else if (storm::iEquals(priorityAction.name, fight_to_normal.name))
         {
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
             core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
@@ -2927,12 +3031,12 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
             }
             else if (priorityAction.name && storm::iEquals(actionName, priorityAction.name))
             {
-                if (storm::iEquals(priorityAction.name, CHARACTER_NORM_TO_FIGHT))
+                if (storm::iEquals(priorityAction.name, normal_to_fight.name))
                 {
                     core.Send_Message(blade, "ll", MSG_BLADE_HAND, 0);
                     core.Send_Message(blade, "ll", MSG_BLADE_HAND, 1);
                 }
-                else if (storm::iEquals(priorityAction.name, CHARACTER_FIGHT_TO_NORM))
+                else if (storm::iEquals(priorityAction.name, fight_to_normal.name))
                 {
                     core.Send_Message(blade, "ll", MSG_BLADE_BELT, 0);
                     core.Send_Message(blade, "ll", MSG_BLADE_BELT, 1);
