@@ -709,6 +709,9 @@ VDATA *COMPILER::ProcessEvent(const char *event_name)
         return nullptr;
     }
 
+    if (storm::iEquals(event_name, "CreateScriptStack")) // evganat - стек скриптов
+        CollectCallStack();
+
     event_code = EventTab.FindEvent(event_name);
     if (event_code == INVALID_EVENT_CODE)
         return nullptr; // no handlers
