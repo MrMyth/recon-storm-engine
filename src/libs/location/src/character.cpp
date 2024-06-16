@@ -68,23 +68,17 @@ uint8_t Character::fightTbl[fgt_max][fgt_max] = {
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_round Circle Kick
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_break Trample
     {0, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_feint Feint - Special trick
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_attack_feintc Continue feint in case of counterattack
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_attack_feintc Continue feint in case of counterattack
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_fire Pistol Shot
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_attack The reaction of hitting a character putting him into stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-     0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Reaction from a feint that puts him into stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_parry Reaction from a parry putting him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_attack The reaction of hitting a character putting him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_feint Reaction from a feint that puts him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_parry Reaction from a parry putting him into stall
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_round Reaction Knock Back with Round Hit
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_hit_fire Reaction from a shot that puts him into stall
-    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_block Saber Defense
+    {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_hit_fire Reaction from a shot that puts him into stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1, 0, 1, 1, 0, 0, 0, 0}, // fgt_block Saber Defense
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0}, // fgt_blockhit Saber protection
     {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}, // fgt_blockbreak Punch block
-    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-    // fgt_parry Parry, a defensive move that brings the enemy into a stall
+    {0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_parry Parry, a defensive move that brings the enemy into a stall
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_recoil Bounce back
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_l Bounce left
     {0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 1, 1, 0, 0, 0, 0, 0, 0, 0}, // fgt_strafe_r Bounce right
@@ -1718,7 +1712,9 @@ void Character::Block()
     if (!isFight)
         return;
     if (fgtCurType != fgt_blockhit && fgtSetType != fgt_blockhit && fgtCurType != fgt_blockbreak &&
-        fgtSetType != fgt_blockbreak)
+        fgtSetType != fgt_blockbreak && fgtCurType != fgt_hit_attack && fgtSetType != fgt_hit_attack && 
+		fgtCurType != fgt_hit_feint && fgtSetType != fgt_hit_feint && fgtCurType != fgt_hit_round && 
+		fgtSetType != fgt_hit_round)
     {
         fgtSetType = fgt_block;
         fgtSetIndex = 0;
@@ -1890,86 +1886,49 @@ void Character::Hit(FightAction type)
         }
     }
     impulse = 0.0f;
-    const bool restBlockBreak = (fgtSetType == fgt_blockbreak);
     switch (type)
     {
-    case fgt_hit_attack:
-        if (fgtCurType != fgt_block && fgtCurType != fgt_blockhit)
-        {
+        case fgt_hit_attack:
             HitChild(false);
-            if (fgtSetType < fgt_hit_attack)
-            {
-                fgtSetType = fgt_hit_attack;
-                fgtSetIndex = rand() % numHits;
-            }
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_attack");
-        }
-        else
-        {
-            HitChild(true);
-            fgtSetType = fgt_blockhit;
-            fgtSetIndex = 0;
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_blockhit");
-        }
-        break;
-    case fgt_hit_round:
-        if (fgtCurType != fgt_block && fgtCurType != fgt_blockhit)
-        {
+		    fgtSetType = fgt_hit_attack;
+		    fgtSetIndex = rand() % numHits;
+            break;
+        case fgt_hit_round:
             HitChild(false);
             fgtSetType = fgt_hit_round;
             fgtSetIndex = 0;
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_round");
-        }
-        else
-        {
-            HitChild(true);
-            fgtSetType = fgt_blockhit;
-            fgtSetIndex = 0;
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_blockhit");
-        }
         break;
-    case fgt_blockbreak:
-        if (fgtCurType != fgt_block && fgtCurType != fgt_blockhit)
-        {
-            HitChild(false);
-            fgtSetType = fgt_hit_attack;
-            fgtSetIndex = rand() % numHits;
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_attack");
-        }
-        else
-        {
+        case fgt_blockbreak:
             HitChild(true);
             fgtSetType = fgt_blockbreak;
             fgtSetIndex = 0;
-            // core.Send_Message(eid, "lls", 45020, false, "fgt_blockbreak");
-        }
-        break;
-    case fgt_hit_feint:
-        HitChild(false);
-        fgtSetType = fgt_hit_feint;
-        fgtSetIndex = 0;
-        // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_feint");
-        break;
-    case fgt_hit_parry:
-        HitChild(true);
-        fgtSetType = fgt_hit_parry;
-        fgtSetIndex = 0;
-        // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_parry");
-        break;
-    case fgt_hit_fire:
-        HitChild(false);
-        fgtSetType = fgt_hit_fire;
-        fgtSetIndex = 0;
-        // core.Send_Message(eid, "lls", 45020, false, "fgt_hit_fire");
-        break;
-    default:
-        HitChild(false);
-        fgtSetType = fgt_hit_attack;
-        fgtSetIndex = rand() % numHits;
-        // core.Send_Message(eid, "lls", 45020, false, "default hit!...");
+            break;
+        case fgt_hit_feint:
+            HitChild(false);
+            fgtSetType = fgt_hit_feint;
+            fgtSetIndex = 0;
+            break;
+        case fgt_hit_parry:
+            HitChild(true);
+            fgtSetType = fgt_hit_parry;
+            fgtSetIndex = 0;
+            break;
+        case fgt_hit_fire:
+            HitChild(false);
+            fgtSetType = fgt_hit_fire;
+            fgtSetIndex = 0;
+            break;
+	// evganat - ещё один кейс
+	    case fgt_blockhit:
+		    HitChild(true);
+            fgtSetType = fgt_blockhit;
+            fgtSetIndex = 0;
+		    break;
+        default:
+            HitChild(false);
+            fgtSetType = fgt_hit_attack;
+            fgtSetIndex = rand() % numHits;
     }
-    if (restBlockBreak)
-        fgtSetType = fgt_blockbreak;
 }
 
 // Shot
@@ -2904,7 +2863,7 @@ void Character::ActionEvent(Animation *animation, int32_t playerIndex, const cha
     }
     else if ((alliace = GetValueByPrefix(eventName, "SndAlliace_")) != nullptr)
     {
-        PlaySound(alliace);
+		PlaySound(alliace);
     }
     else
         /*
@@ -5138,36 +5097,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
     bool isBlockBreak = false;
     const char *aname;
     FightAction hitReaction;
-    switch (fgtCurType)
-    {
-    case fgt_attack_fast:
-        aname = FGT_ATTACK_FAST;
-        hitReaction = fgt_hit_attack;
-        break;
-    case fgt_attack_force:
-        aname = FGT_ATTACK_FORCE;
-        hitReaction = fgt_hit_attack;
-        break;
-    case fgt_attack_round:
-        aname = FGT_ATTACK_ROUND;
-        hitReaction = fgt_hit_round;
-        break;
-    case fgt_attack_break:
-        aname = FGT_ATTACK_BREAK;
-        hitReaction = fgt_blockbreak;
-        isBlockBreak = true;
-        break;
-    case fgt_attack_feintc:
-        aname = FGT_ATTACK_FEINT;
-        hitReaction = fgt_hit_feint;
-        break;
-        /*case fgt_attack_feint: // boal added and removed for the test
-          aname = FGT_ATTACK_FEINT;
-          hitReaction = fgt_hit_feint;
-          break;*/
-    default:
-        return;
-    }
+    
     float attackDist = 2.4f, attackAng = (fgtCurType != fgt_attack_round ? 60.0f : 0.0f);
     MODEL *m = Model();
     if (m)
@@ -5202,7 +5132,7 @@ inline void Character::CheckAttackHit(bool isGunBlade)
         // Character
         Supervisor::FindCharacter &fc = fndCharacter[i];
         if (fc.c->liveValue < 0 || fc.c->deadName || fc.d2 <= 0.0f)
-            continue;
+            continue;	
         if (fc.c->isRecoilState)
         {
             int32_t resHit = 0;
@@ -5234,22 +5164,69 @@ inline void Character::CheckAttackHit(bool isGunBlade)
         else if (!isDodge)
         {
             bool isBlocked = (fc.c->fgtCurType == fgt_block || fc.c->fgtCurType == fgt_blockhit);
-            if (isBlockBreak)
+			int32_t isBlockFailed = 0;	// evganat - рефакторинг блока
+			if(isBlocked)
+			{
+				VDATA *vdUnarmed = core.Event("Event_CheckBlockFailed", "ii", GetId(), fc.c->GetId());
+				if(vdUnarmed)
+					vdUnarmed->Get(isBlockFailed);
+			}
+			switch (fgtCurType)
+			{	
+				case fgt_attack_fast:
+					aname = FGT_ATTACK_FAST;
+					hitReaction = fgt_hit_attack;
+					if(isBlocked && !isBlockFailed)
+						hitReaction = fgt_blockhit;
+					break;
+				case fgt_attack_force:
+					aname = FGT_ATTACK_FORCE;
+					hitReaction = fgt_hit_attack;
+					if(isBlocked && !isBlockFailed)
+						hitReaction = fgt_blockhit;
+					break;
+				case fgt_attack_round:
+					aname = FGT_ATTACK_ROUND;
+					hitReaction = fgt_hit_round;
+					if(isBlocked && !isBlockFailed)
+						hitReaction = fgt_blockhit;
+					break;
+				case fgt_attack_break:
+					aname = FGT_ATTACK_BREAK;
+					hitReaction = fgt_hit_attack;
+					isBlockBreak = true;
+					if(isBlocked && !isBlockFailed)
+						hitReaction = fgt_blockbreak;
+					break;
+				case fgt_attack_feintc:
+					aname = FGT_ATTACK_FEINT;
+					hitReaction = fgt_hit_feint;
+					if(isBlocked && !isBlockFailed)
+						hitReaction = fgt_blockhit;
+					break;
+				default:
+					return;
+			}
+			std::string aliasInfo = "";
+            if (isBlockBreak || isBlockFailed)
+			{
                 isBlocked = false;
+				aliasInfo = "break";
+			}
+			std::string col_sound = "";
+			VDATA *vdColSound;
             if (isBlocked)
             {
-                // fc.c->PlaySound("fgt_block");
+                aliasInfo = "blocked";
             }
             else
             {
                 if (fc.c->fgtCurType >= fgt_attack_fast && fc.c->fgtCurType <= fgt_attack_feintc)
                 {
-                    fc.c->PlaySound("fgt_collision");
+					aliasInfo = "attack";
+					col_sound = "fgt_collision";
                 }
-                else
-                {
-                    // fc.c->PlaySound("fgt_blockbreak");
-                }
+                				
                 // fc.c->PlaySound("fgt_inbody");
                 if (isHrrrSound && (rand() & 3))
                 {
@@ -5268,6 +5245,13 @@ inline void Character::CheckAttackHit(bool isGunBlade)
             {
 				fc.c->Hit(hitReaction);
             }
+			if(aliasInfo == "")
+				aliasInfo = "other";
+			vdColSound = core.Event("Event_GetWeaponCollisionSound", "iissl", GetId(), fc.c->GetId(), aname, aliasInfo, resStun);
+			if(vdColSound)
+				col_sound = vdColSound->GetString();
+			if(col_sound != "")
+				fc.c->PlaySound(col_sound.c_str());
 			
             int blockTime = -1;
             if (isBlocked)
