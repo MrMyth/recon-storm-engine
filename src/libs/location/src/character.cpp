@@ -56,6 +56,7 @@
 #define FGT_ATTACK_ROUND "round"
 #define FGT_ATTACK_BREAK "break"
 #define FGT_ATTACK_FEINT "feint"
+#define FGT_ATTACK_FEINTC "feintc"
 #define FGT_ATTACK_PARRY "parry" // for breakout "hit_parry" boal
 
 // Table of the possibility of changing one action by another
@@ -1578,34 +1579,9 @@ void Character::Attack(Character *enemy, FightAction type)
         return;
     if (type < fgt_attack_fast || type > fgt_attack_feintc)
         return;
-    // if(!fightTbl[fgtCurType][type]) return;
-    if (enemy)
-    {
-        enemyAttack = enemy->GetId();
-        const float dx = enemy->curPos.x - curPos.x;
-        const float dz = enemy->curPos.z - curPos.z;
-        float cs = dx * dx + dz * dz;
-        Turn(dx, dz);
-        isTurnLock = true;
-        /*
-        if(cs > 0.0f)
-        {
-          float cdx = sinf(ay);
-          float cdz = cosf(ay);
-          cs = (cdx*dx + cdz*dz)/sqrtf(cs);
-          static float csang = cosf(60.0f*3.141592654f/180.0f);
-          if(cs >= csang)
-          {
-            Turn(dx, dz);
-            isTurnLock = true;
-          }
-        }*/
-    }
-    else
-        memset(&enemyAttack, 0, sizeof(enemyAttack));
-    VDATA *res = nullptr;
+	VDATA *res = nullptr;
     const char *aname = nullptr;
-    switch (type)
+	switch (type)
     {
     case fgt_attack_fast:
         aname = FGT_ATTACK_FAST;
@@ -1656,17 +1632,8 @@ void Character::Attack(Character *enemy, FightAction type)
         fgtSetIndex = rand() % numAttackFeint;
         break;
     case fgt_attack_feintc:
-        fgtSetType = fgt_attack_feintc; // fix boal
-        // fgtCurType =
-        if (fgtCurIndex >= 0 && fgtCurIndex < numAttackFeint)
-        {
-            fgtSetIndex = fgtCurIndex;
-        }
-        else
-        {
-            fgtSetIndex = rand() % numAttackFeint;
-        }
-        return; // fix boal
+		aname = FGT_ATTACK_FEINTC;
+        fgtSetIndex = rand() % numAttackFeint;
         break;
     default:
         fgtSetType = fgt_none;
@@ -1700,7 +1667,33 @@ void Character::Attack(Character *enemy, FightAction type)
     {
         fgtSetType = fgt_none;
         fgtSetIndex = -1;
+		return;
     }
+    // if(!fightTbl[fgtCurType][type]) return;
+    if (enemy)
+    {
+        enemyAttack = enemy->GetId();
+        const float dx = enemy->curPos.x - curPos.x;
+        const float dz = enemy->curPos.z - curPos.z;
+        float cs = dx * dx + dz * dz;
+        Turn(dx, dz);
+        isTurnLock = true;
+        /*
+        if(cs > 0.0f)
+        {
+          float cdx = sinf(ay);
+          float cdz = cosf(ay);
+          cs = (cdx*dx + cdz*dz)/sqrtf(cs);
+          static float csang = cosf(60.0f*3.141592654f/180.0f);
+          if(cs >= csang)
+          {
+            Turn(dx, dz);
+            isTurnLock = true;
+          }
+        }*/
+    }
+    else
+        memset(&enemyAttack, 0, sizeof(enemyAttack));
 }
 
 // Block
