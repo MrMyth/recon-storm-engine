@@ -282,6 +282,15 @@ void BISignIcon::MakeControl()
     core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_right);
+	
+	// evganat - дополнительный контрол переключения команд
+	core.Controls->GetControlState(BI_COMMANDS_LEFTSTEP_W, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(Command_left);
+
+    core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP_W, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(Command_right);
 
     core.Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)

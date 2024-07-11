@@ -366,6 +366,15 @@ void BIManSign::MakeControl()
     core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_RIGHT);
+	
+	// evganat - дополнительный контрол переключения команд
+	core.Controls->GetControlState(BI_COMMANDS_LEFTSTEP_W, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_LEFT);
+
+    core.Controls->GetControlState(BI_COMMANDS_RIGHTSTEP_W, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_RIGHT);
 
     core.Controls->GetControlState(BI_COMMANDS_UPSTEP, cs);
     if (cs.state == CST_ACTIVATED)

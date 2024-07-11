@@ -37,6 +37,9 @@
 #define BI_COMMANDS_CONFIRM "BICommandsConfirm"
 #define BI_COMMANDS_RIGHTSTEP "BICommandsRight"
 #define BI_COMMANDS_LEFTSTEP "BICommandsLeft"
+// evganat - дополнительный контрол переключения команд
+#define BI_COMMANDS_RIGHTSTEP_W "BICommandsRightW"
+#define BI_COMMANDS_LEFTSTEP_W "BICommandsLeftW"
 #define BI_COMMANDS_UPSTEP "BICommandsUp"
 #define BI_COMMANDS_DOWNSTEP "BICommandsDown"
 #define BI_COMMANDS_CANCEL "BICommandsCancel"
