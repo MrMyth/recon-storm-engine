@@ -171,8 +171,7 @@ void Player::Move(float dltTime)
                 else if (IsDoParry())
                 {
                     // boal -->
-                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak ||
-                        fgtCurType == fgt_hit_attack)
+                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak)
                     {
                         StopFightAnimation();
                     }
@@ -199,8 +198,7 @@ void Player::Move(float dltTime)
                 }
                 else if (IsDoAttackRound())
                 {
-                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak ||
-                        fgtCurType == fgt_hit_attack)
+                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak)
                     {
                         StopFightAnimation();
                     }
@@ -216,8 +214,7 @@ void Player::Move(float dltTime)
                 }
                 else if (IsDoAttackFeint())
                 {
-                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak ||
-                        fgtCurType == fgt_hit_attack)
+                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak)
                     {
                         StopFightAnimation();
                     }
@@ -225,8 +222,7 @@ void Player::Move(float dltTime)
                 }
                 else if (IsFire())
                 {
-                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak ||
-                        fgtCurType == fgt_hit_attack)
+                    if (fgtCurType == fgt_block || fgtCurType == fgt_blockhit || fgtCurType == fgt_blockbreak)
                     {
                         StopFightAnimation();
                     }
