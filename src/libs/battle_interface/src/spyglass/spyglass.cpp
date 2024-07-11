@@ -137,13 +137,18 @@ bool ISPYGLASS::Init()
     m_ImgCaptainBoarding.LoadFromAttr(m_pImgRender, GetAttr("captain.boarding"), "interfaces\\skills.tga", 168, 600,
                                       232, 664, 10000);
 
+	//ענ‏ל
+	m_Hold.LoadFromAttr(m_pImgRender, GetAttr("info.hold"), "battle_interface\\list_icon2.tga", 612, 600, 484, 676,
+                        10000);
+	m_TextHoldCapacity.LoadFromAttr(rs, GetAttr("text.hold"), "?", 210, 640);
+
     // captain text data
     m_TextCaptainName.LoadFromAttr(rs, GetAttr("captext.capname"), "?", 210, 640);
     m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // replaced "?" with empty
     m_TextCaptainCannon.LoadFromAttr(rs, GetAttr("captext.cannon"), "", 210, 640);
     m_TextCaptainAccuracy.LoadFromAttr(rs, GetAttr("captext.accuracy"), "", 210, 640);
     m_TextCaptainNavigation.LoadFromAttr(rs, GetAttr("captext.navigation"), "", 210, 640);
-    m_TextCaptainBoarding.LoadFromAttr(rs, GetAttr("captext.boarding"), "", 210, 640);
+    m_TextCaptainBoarding.LoadFromAttr(rs, GetAttr("captext.boarding"), "", 210, 640);	
 
     m_txtShipType.LoadFromAttr(rs, GetAttr("text.shiptype"), "Caravella", 210, 640);
     m_txtShipName.LoadFromAttr(rs, GetAttr("text.shipname"), "Noname", 210, 660);
@@ -215,6 +220,8 @@ void ISPYGLASS::Realize(uint32_t delta_time) const
             m_TextCaptainAccuracy.Print();
             m_TextCaptainNavigation.Print();
             m_TextCaptainBoarding.Print();
+			
+			m_TextHoldCapacity.Print(); //ענ‏ל
         }
     }
 }
@@ -242,7 +249,7 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
     }
     break;
 
-    case MSG_ISG_UPDATE: // "lsslllfflllllllllllss"
+    case MSG_ISG_UPDATE: // "lsslllfflllllllllllss" // "lsslllfflllllllllllssls"
     {
         const std::string &shipname = message.String();
         const std::string &shiptype = message.String();
@@ -266,10 +273,11 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
         const std::string &captainname = message.String();
         const std::string &facetexture = message.String();
         auto nShipClass = message.Long();
+		const std::string &holdCapacity = message.String(); //ענ‏ל
         ChangeTargetData(shipname.c_str(), shiptype.c_str(), fRelativeHP, fRelativeSP, nShipCrew, fShipSpeed, fSailTo,
                          nCurCannons, nMaxCannons, nCharge, nNation, nSailState, nFace, nFencingSkl, nCannonSkl,
                          nAccuracySkl, nNavigationSkl, nBoardingSkl, captainname.c_str(), facetexture.c_str(),
-                         nShipClass);
+                         nShipClass, holdCapacity.c_str());
     }
     break;
 
@@ -333,6 +341,10 @@ void ISPYGLASS::Release()
     m_TextCaptainNavigation.Release();
     m_ImgCaptainBoarding.Release();
     m_TextCaptainBoarding.Release();
+	
+	 //ענ‏ל
+	m_Hold.Release();
+	m_TextHoldCapacity.Release();
 
     STORM_DELETE(m_pImgRender);
 }
@@ -397,6 +409,7 @@ void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
         m_Sail.pImage->SetColor(m_Sail.dwColor);
         m_Charge.pImage->SetColor(m_Charge.dwColor);
         m_SailTo.pImage->SetColor(m_SailTo.dwColor); // boal
+		m_Hold.pImage->SetColor(m_Hold.dwColor); //ענ‏ל
 
         m_CaptainBack.pImage->SetColor(m_CaptainBack.dwColor);
         m_CaptainFace.pImage->SetColor(m_CaptainFace.dwColor);
@@ -405,6 +418,7 @@ void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
         m_ImgCaptainAccuracy.pImage->SetColor(m_ImgCaptainAccuracy.dwColor);
         m_ImgCaptainNavigation.pImage->SetColor(m_ImgCaptainNavigation.dwColor);
         m_ImgCaptainBoarding.pImage->SetColor(m_ImgCaptainBoarding.dwColor);
+		
     }
     else
     {
@@ -418,6 +432,7 @@ void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
         m_Sail.pImage->SetColor(m_Sail.dwColor & 0xFFFFFF);
         m_Charge.pImage->SetColor(m_Charge.dwColor & 0xFFFFFF);
         m_SailTo.pImage->SetColor(m_SailTo.dwColor & 0xFFFFFF); // boal
+		m_Hold.pImage->SetColor(m_Hold.dwColor & 0xFFFFFF); //ענ‏ל
 
         m_CaptainBack.pImage->SetColor(0xFFFFFF);
         m_CaptainFace.pImage->SetColor(0xFFFFFF);
@@ -567,7 +582,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
                                  int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
                                  int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
                                  int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
-                                 const char *pcFaceTexture, int32_t nShipClass)
+                                 const char *pcFaceTexture, int32_t nShipClass, const char *pcHoldCapacity)
 {
     char param[256];
 

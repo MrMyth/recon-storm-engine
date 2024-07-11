@@ -123,6 +123,10 @@ class ISPYGLASS : public Entity
     ImageParam m_ShipSP;    // ship SP
     ImageParam m_Class;     // ship class
 
+	//ענ‏ל
+	ImageParam m_Hold;
+	TextParam m_TextHoldCapacity;
+
     // captain sign
     ImageParam m_CaptainBack;    // captain back image
     ImageParam m_CaptainFace;    // captain face image
@@ -185,7 +189,7 @@ class ISPYGLASS : public Entity
                           int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
                           int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
                           int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
-                          const char *pcFaceTexture, int32_t nShipClass);
+                          const char *pcFaceTexture, int32_t nShipClass, const char *pcHoldCapacity);
     void FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const;
     VAI_OBJBASE *GetFort();
 };
