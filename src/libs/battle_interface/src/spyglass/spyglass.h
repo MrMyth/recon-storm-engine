@@ -123,7 +123,7 @@ class ISPYGLASS : public Entity
     ImageParam m_ShipSP;    // ship SP
     ImageParam m_Class;     // ship class
 
-	//òðþì
+	//Ñ‚Ñ€ÑŽÐ¼
 	ImageParam m_Hold;
 	TextParam m_TextHoldCapacity;
 

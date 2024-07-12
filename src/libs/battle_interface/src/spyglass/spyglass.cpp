@@ -802,6 +802,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
             m_ImgCaptainBoarding.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
     m_TextCaptainName.sText = pcCaptainName;
+	m_TextHoldCapacity.sText = pcHoldCapacity; //ענ‏ל
 }
 
 void ISPYGLASS::FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const
