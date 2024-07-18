@@ -98,64 +98,48 @@ bool ISPYGLASS::Init()
 
     m_pImgRender = new BIImageRender(rs);
     Assert(m_pImgRender);
-
-    m_Lens.LoadFromAttr(m_pImgRender, GetAttr("lens"), "battle_interface\\spyglass\\eye_badTub.tga", 0, 0, 1024, 768,
-                        8000);
-    m_ShipImage.LoadFromAttr(m_pImgRender, GetAttr("shipsign.ship"), "battle_interface\\ship_icons1.tga", 80, 600, 144,
-                             664, 9000);
-    m_ShipBack.LoadFromAttr(m_pImgRender, GetAttr("shipsign.back"), "battle_interface\\shipbackicon.tga", 80, 600, 208,
-                            728, 10000);
-    m_ShipHP.LoadFromAttr(m_pImgRender, GetAttr("shipsign.hp"), "battle_interface\\ShipState.tga", 80, 600, 208, 728,
-                          10000);
-    m_ShipSP.LoadFromAttr(m_pImgRender, GetAttr("shipsign.sp"), "battle_interface\\ShipState.tga", 80, 600, 208, 728,
-                          10000);
-    m_Class.LoadFromAttr(m_pImgRender, GetAttr("shipsign.class"), "battle_interface\\ShipClass.tga", 80, 600, 208, 728,
-                         10000);
+	
+	// ship data -->
+    m_Lens.LoadFromAttr(m_pImgRender, GetAttr("lens"), "battle_interface\\spyglass\\eye_badTub.tga", 0, 0, 1024, 768, 8000);
+    m_ShipImage.LoadFromAttr(m_pImgRender, GetAttr("shipsign.ship"), "battle_interface\\ship_icons1.tga", 80, 600, 144, 664, 9000);
+    m_ShipBack.LoadFromAttr(m_pImgRender, GetAttr("shipsign.back"), "battle_interface\\shipbackicon.tga", 80, 600, 208, 728, 10000);
+    m_ShipHP.LoadFromAttr(m_pImgRender, GetAttr("shipsign.hp"), "battle_interface\\ShipState.tga", 80, 600, 208, 728, 10000);
+    m_ShipSP.LoadFromAttr(m_pImgRender, GetAttr("shipsign.sp"), "battle_interface\\ShipState.tga", 80, 600, 208, 728, 10000);
+    m_Class.LoadFromAttr(m_pImgRender, GetAttr("shipsign.class"), "battle_interface\\ShipClass.tga", 80, 600, 208, 728, 10000);
     m_Nation.LoadFromAttr(m_pImgRender, GetAttr("info.nation"), "flagall.tga", 210, 600, 274, 632, 10000);
-    m_Cannon.LoadFromAttr(m_pImgRender, GetAttr("info.cannon"), "battle_interface\\list_icon2.tga", 320, 600, 384, 664,
-                          10000);
-    m_Sail.LoadFromAttr(m_pImgRender, GetAttr("info.speed"), "battle_interface\\list_icon2.tga", 420, 600, 484, 664,
-                        10000);
-    m_Charge.LoadFromAttr(m_pImgRender, GetAttr("info.charge"), "battle_interface\\list_icon2.tga", 520, 600, 584, 664,
-                          10000);
-    m_SailTo.LoadFromAttr(m_pImgRender, GetAttr("info.sailto"), "battle_interface\\list_icon2.tga", 620, 600, 684, 664,
-                          10000); // boal
-
-    // captain image data
-    m_CaptainBack.LoadFromAttr(m_pImgRender, GetAttr("captain.back"), "battle_interface\\shipbackicon.tga", 816, 600,
-                               944, 728, 10000);
-    m_CaptainFace.LoadFromAttr(m_pImgRender, GetAttr("captain.face"), "battle_interface\\portraits\\face_0.tga", 816,
-                               600, 880, 664, 9000);
-    m_ImgCaptainFencing.LoadFromAttr(m_pImgRender, GetAttr("captain.fencing"), "interfaces\\skills.tga", 680, 600, 764,
-                                     664, 10000);
-    m_ImgCaptainCannon.LoadFromAttr(m_pImgRender, GetAttr("captain.cannon"), "interfaces\\skills.tga", 552, 600, 616,
-                                    664, 10000);
-    m_ImgCaptainAccuracy.LoadFromAttr(m_pImgRender, GetAttr("captain.accuracy"), "interfaces\\skills.tga", 424, 600,
-                                      488, 664, 10000);
-    m_ImgCaptainNavigation.LoadFromAttr(m_pImgRender, GetAttr("captain.navigation"), "interfaces\\skills.tga", 296, 600,
-                                        360, 664, 10000);
-    m_ImgCaptainBoarding.LoadFromAttr(m_pImgRender, GetAttr("captain.boarding"), "interfaces\\skills.tga", 168, 600,
-                                      232, 664, 10000);
-
-	//ענ‏ל
-	m_Hold.LoadFromAttr(m_pImgRender, GetAttr("info.hold"), "battle_interface\\list_icon2.tga", 612, 600, 484, 676,
-                        10000);
-	m_TextHoldCapacity.LoadFromAttr(rs, GetAttr("text.hold"), "?", 210, 640);
-
-    // captain text data
-    m_TextCaptainName.LoadFromAttr(rs, GetAttr("captext.capname"), "?", 210, 640);
-    m_TextCaptainFencing.LoadFromAttr(rs, GetAttr("captext.fencing"), "", 210, 640); // replaced "?" with empty
-    m_TextCaptainCannon.LoadFromAttr(rs, GetAttr("captext.cannon"), "", 210, 640);
-    m_TextCaptainAccuracy.LoadFromAttr(rs, GetAttr("captext.accuracy"), "", 210, 640);
-    m_TextCaptainNavigation.LoadFromAttr(rs, GetAttr("captext.navigation"), "", 210, 640);
-    m_TextCaptainBoarding.LoadFromAttr(rs, GetAttr("captext.boarding"), "", 210, 640);	
-
-    m_txtShipType.LoadFromAttr(rs, GetAttr("text.shiptype"), "Caravella", 210, 640);
+    m_Cannon.LoadFromAttr(m_pImgRender, GetAttr("info.cannon"), "battle_interface\\list_icon2.tga", 320, 600, 384, 664, 10000);
+    m_Sail.LoadFromAttr(m_pImgRender, GetAttr("info.speed"), "battle_interface\\list_icon2.tga", 420, 600, 484, 664, 10000);
+    m_Charge.LoadFromAttr(m_pImgRender, GetAttr("info.charge"), "battle_interface\\list_icon2.tga", 520, 600, 584, 664, 10000);
+    m_SailTo.LoadFromAttr(m_pImgRender, GetAttr("info.sailto"), "battle_interface\\list_icon2.tga", 620, 600, 684, 664, 10000); // boal
+	m_Hold.LoadFromAttr(m_pImgRender, GetAttr("info.hold"), "battle_interface\\list_icon2.tga", 612, 600, 484, 676, 10000);
+	
+	m_txtShipType.LoadFromAttr(rs, GetAttr("text.shiptype"), "Caravella", 210, 640);
     m_txtShipName.LoadFromAttr(rs, GetAttr("text.shipname"), "Noname", 210, 660);
-    m_txtCannons.LoadFromAttr(rs, GetAttr("text.cannons"), "14/16", 390, 610);
+    //m_txtCannons.LoadFromAttr(rs, GetAttr("text.cannons"), "14/16", 390, 610); // replased with two strings below
+	m_textCannonsType.LoadFromAttr(rs, GetAttr("text.cannonsType"), "?", 390, 610);
+	m_textCannonsQuantity.LoadFromAttr(rs, GetAttr("text.cannonsQuantity"), "?", 390, 610);
     m_txtShipSpeed.LoadFromAttr(rs, GetAttr("text.speed"), "6.3", 490, 610);
     m_txtSailTo.LoadFromAttr(rs, GetAttr("text.sailto"), "6.3", 590, 610); // boal
     m_txtShipCrew.LoadFromAttr(rs, GetAttr("text.crew"), "", 144, 700);
+	m_TextHoldCapacity.LoadFromAttr(rs, GetAttr("text.hold"), "?", 210, 640);
+	// <-- ship data
+	
+    // captain data -->
+    m_CaptainBack.LoadFromAttr(m_pImgRender, GetAttr("captain.back"), "battle_interface\\shipbackicon.tga", 816, 600, 944, 728, 10000);
+    m_CaptainFace.LoadFromAttr(m_pImgRender, GetAttr("captain.face"), "battle_interface\\portraits\\face_0.tga", 816, 600, 880, 664, 9000);
+    m_ImgCaptainDefence.LoadFromAttr(m_pImgRender, GetAttr("captain.defence"), "interfaces\\skills.tga", 680, 600, 764, 664, 10000);
+    m_ImgCaptainCannon.LoadFromAttr(m_pImgRender, GetAttr("captain.cannon"), "interfaces\\skills.tga", 552, 600, 616, 664, 10000);
+    m_ImgCaptainAccuracy.LoadFromAttr(m_pImgRender, GetAttr("captain.accuracy"), "interfaces\\skills.tga", 424, 600, 488, 664, 10000);
+    m_ImgCaptainNavigation.LoadFromAttr(m_pImgRender, GetAttr("captain.navigation"), "interfaces\\skills.tga", 296, 600, 360, 664, 10000);
+    m_ImgCaptainBoarding.LoadFromAttr(m_pImgRender, GetAttr("captain.boarding"), "interfaces\\skills.tga", 168, 600, 232, 664, 10000);
+
+    m_TextCaptainName.LoadFromAttr(rs, GetAttr("captext.capname"), "?", 210, 640);
+    m_TextCaptainDefence.LoadFromAttr(rs, GetAttr("captext.Defence"), "", 210, 640); // replaced "?" with empty
+    m_TextCaptainCannon.LoadFromAttr(rs, GetAttr("captext.cannon"), "", 210, 640);
+    m_TextCaptainAccuracy.LoadFromAttr(rs, GetAttr("captext.accuracy"), "", 210, 640);
+    m_TextCaptainNavigation.LoadFromAttr(rs, GetAttr("captext.navigation"), "", 210, 640);
+    m_TextCaptainBoarding.LoadFromAttr(rs, GetAttr("captext.boarding"), "", 210, 640);
+	// <-- captain data 
 
     FillUVArrayFromAttributes(m_aNationUV, GetAttr("nationuvarray"));
     FillUVArrayFromAttributes(m_aChargeUV, GetAttr("chargeuvarray"));
@@ -209,19 +193,20 @@ void ISPYGLASS::Realize(uint32_t delta_time) const
         {
             m_txtShipType.Print();
             m_txtShipName.Print();
-            m_txtCannons.Print();
+            //m_txtCannons.Print();
+			m_textCannonsType.Print();
+			m_textCannonsQuantity.Print();
             m_txtShipSpeed.Print();
             m_txtSailTo.Print(); // boal
             m_txtShipCrew.Print();
-
+			m_TextHoldCapacity.Print();
+			
             m_TextCaptainName.Print();
-            m_TextCaptainFencing.Print();
+            m_TextCaptainDefence.Print();
             m_TextCaptainCannon.Print();
             m_TextCaptainAccuracy.Print();
             m_TextCaptainNavigation.Print();
             m_TextCaptainBoarding.Print();
-			
-			m_TextHoldCapacity.Print(); //ענ‏ל
         }
     }
 }
@@ -249,7 +234,7 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
     }
     break;
 
-    case MSG_ISG_UPDATE: // "lsslllfflllllllllllss" // "lsslllfflllllllllllssls"
+    case MSG_ISG_UPDATE: // "lsslllffsslllllllllssls"
     {
         const std::string &shipname = message.String();
         const std::string &shiptype = message.String();
@@ -258,14 +243,16 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
         auto nShipCrew = message.Long();
         auto fShipSpeed = message.Float();
         auto fSailTo = message.Float(); // boal
-        auto nCurCannons = message.Long();
-        auto nMaxCannons = message.Long();
+        //auto nCurCannons = message.Long();
+        //auto nMaxCannons = message.Long();
+		const std::string &typeCannons = message.String();
+		const std::string &quantityCannons = message.String();
         auto nCharge = message.Long();
         auto nNation = message.Long();
 
         auto nSailState = message.Long();
         auto nFace = message.Long();
-        auto nFencingSkl = message.Long();
+        auto nDefenceSkl = message.Long();
         auto nCannonSkl = message.Long();
         auto nAccuracySkl = message.Long();
         auto nNavigationSkl = message.Long();
@@ -273,9 +260,9 @@ uint64_t ISPYGLASS::ProcessMessage(MESSAGE &message)
         const std::string &captainname = message.String();
         const std::string &facetexture = message.String();
         auto nShipClass = message.Long();
-		const std::string &holdCapacity = message.String(); //ענ‏ל
+		const std::string &holdCapacity = message.String();
         ChangeTargetData(shipname.c_str(), shiptype.c_str(), fRelativeHP, fRelativeSP, nShipCrew, fShipSpeed, fSailTo,
-                         nCurCannons, nMaxCannons, nCharge, nNation, nSailState, nFace, nFencingSkl, nCannonSkl,
+                         typeCannons.c_str(), quantityCannons.c_str(), nCharge, nNation, nSailState, nFace, nDefenceSkl, nCannonSkl,
                          nAccuracySkl, nNavigationSkl, nBoardingSkl, captainname.c_str(), facetexture.c_str(),
                          nShipClass, holdCapacity.c_str());
     }
@@ -322,17 +309,22 @@ void ISPYGLASS::Release()
     m_Sail.Release();
     m_Charge.Release();
     m_SailTo.Release(); // boal
+	m_Hold.Release();
+	
     m_txtShipType.Release();
     m_txtShipName.Release();
-    m_txtCannons.Release();
+    //m_txtCannons.Release();
+	m_textCannonsType.Release();
+	m_textCannonsQuantity.Release();
     m_txtShipSpeed.Release();
     m_txtSailTo.Release(); // boal
-
+	m_TextHoldCapacity.Release();
+	
     m_CaptainBack.Release();
     m_CaptainFace.Release();
     m_TextCaptainName.Release();
-    m_ImgCaptainFencing.Release();
-    m_TextCaptainFencing.Release();
+    m_ImgCaptainDefence.Release();
+    m_TextCaptainDefence.Release();
     m_ImgCaptainCannon.Release();
     m_TextCaptainCannon.Release();
     m_ImgCaptainAccuracy.Release();
@@ -341,10 +333,6 @@ void ISPYGLASS::Release()
     m_TextCaptainNavigation.Release();
     m_ImgCaptainBoarding.Release();
     m_TextCaptainBoarding.Release();
-	
-	 //ענ‏ל
-	m_Hold.Release();
-	m_TextHoldCapacity.Release();
 
     STORM_DELETE(m_pImgRender);
 }
@@ -409,11 +397,11 @@ void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
         m_Sail.pImage->SetColor(m_Sail.dwColor);
         m_Charge.pImage->SetColor(m_Charge.dwColor);
         m_SailTo.pImage->SetColor(m_SailTo.dwColor); // boal
-		m_Hold.pImage->SetColor(m_Hold.dwColor); //ענ‏ל
+		m_Hold.pImage->SetColor(m_Hold.dwColor);
 
         m_CaptainBack.pImage->SetColor(m_CaptainBack.dwColor);
         m_CaptainFace.pImage->SetColor(m_CaptainFace.dwColor);
-        m_ImgCaptainFencing.pImage->SetColor(m_ImgCaptainFencing.dwColor);
+        m_ImgCaptainDefence.pImage->SetColor(m_ImgCaptainDefence.dwColor);
         m_ImgCaptainCannon.pImage->SetColor(m_ImgCaptainCannon.dwColor);
         m_ImgCaptainAccuracy.pImage->SetColor(m_ImgCaptainAccuracy.dwColor);
         m_ImgCaptainNavigation.pImage->SetColor(m_ImgCaptainNavigation.dwColor);
@@ -432,11 +420,11 @@ void ISPYGLASS::SetShipInfo(int32_t nCharIndex)
         m_Sail.pImage->SetColor(m_Sail.dwColor & 0xFFFFFF);
         m_Charge.pImage->SetColor(m_Charge.dwColor & 0xFFFFFF);
         m_SailTo.pImage->SetColor(m_SailTo.dwColor & 0xFFFFFF); // boal
-		m_Hold.pImage->SetColor(m_Hold.dwColor & 0xFFFFFF); //ענ‏ל
+		m_Hold.pImage->SetColor(m_Hold.dwColor & 0xFFFFFF); //hold
 
         m_CaptainBack.pImage->SetColor(0xFFFFFF);
         m_CaptainFace.pImage->SetColor(0xFFFFFF);
-        m_ImgCaptainFencing.pImage->SetColor(0xFFFFFF);
+        m_ImgCaptainDefence.pImage->SetColor(0xFFFFFF);
         m_ImgCaptainCannon.pImage->SetColor(0xFFFFFF);
         m_ImgCaptainAccuracy.pImage->SetColor(0xFFFFFF);
         m_ImgCaptainNavigation.pImage->SetColor(0xFFFFFF);
@@ -579,8 +567,8 @@ void ISPYGLASS::UpdateCamera()
 }
 
 void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType, float fRelativeHP, float fRelativeSP,
-                                 int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
-                                 int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
+                                 int32_t nShipCrew, float fShipSpeed, float fSailTo, const char *pcCannonsType, const char *pcCannonsQuantity,
+                                 int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nDefence, int32_t nCannon,
                                  int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
                                  const char *pcFaceTexture, int32_t nShipClass, const char *pcHoldCapacity)
 {
@@ -589,17 +577,20 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     m_txtShipName.sText = pcShipName;
     m_txtShipType.sText = pcShipType;
 
-    // distance to -->
-    if (fSailTo >= 0.f)
+    
+    if (fSailTo >= 0.f) // distance to
     {
         sprintf_s(param, sizeof(param), "%.1f", fSailTo);
         m_txtSailTo.sText = param;
+		if (m_SailTo.pImage) m_SailTo.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
         m_txtSailTo.sText = "";
+		if (m_SailTo.pImage) m_SailTo.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
-    // boal <--
+	
+	//speed -->
     if (fShipSpeed >= 0.f)
     {
         sprintf_s(param, sizeof(param), "%.1f", fShipSpeed);
@@ -609,7 +600,24 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     {
         m_txtShipSpeed.sText = "";
     }
-
+	
+	if (nSailState >= 0 && nSailState < m_aSailUV.size())
+    {
+        if (m_Sail.pImage)
+        {
+            m_Sail.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+            m_Sail.pImage->SetUV(m_aSailUV[nSailState]);
+        }
+    }
+    else
+    {
+        if (m_Sail.pImage)
+            m_Sail.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+    }
+	// speed <--
+	
+	//Coffee cannons
+	/*
     if (nCurCannons >= 0 && nMaxCannons >= 0)
     {
         sprintf_s(param, sizeof(param), "%d/%d", nCurCannons, nMaxCannons);
@@ -623,41 +631,38 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
         if (m_Cannon.pImage)
             m_Cannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
     }
-
+	*/
+	m_textCannonsType.sText = pcCannonsType;
+	m_textCannonsQuantity.sText = pcCannonsQuantity;
+    if (m_textCannonsQuantity.sText != "")
+    {
+        if (m_Cannon.pImage)
+            m_Cannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f); // show
+    }
+    else
+    {
+        if (m_Cannon.pImage)
+            m_Cannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
+    }
+	// <-- cannons
     if (nShipClass > 0)
     {
         float fCutVal = 1.f;
         switch (nShipClass)
         {
-        case 1:
-            fCutVal = 1.f - 13.f / 64.f;
-            break;
-        case 2:
-            fCutVal = 1.f - 22.f / 64.f;
-            break;
-        case 3:
-            fCutVal = 1.f - 32.f / 64.f;
-            break;
-        case 4:
-            fCutVal = 1.f - 40.f / 64.f;
-            break;
-        case 5:
-            fCutVal = 1.f - 50.f / 64.f;
-            break;
-        case 6:
-            fCutVal = 0.f;
-            break;
-        case 7:
-            fCutVal = 0.f;
-            break;
+			case 1: fCutVal = 1.f - 13.f / 64.f; break;
+			case 2: fCutVal = 1.f - 22.f / 64.f; break;
+			case 3: fCutVal = 1.f - 32.f / 64.f; break;
+			case 4: fCutVal = 1.f - 40.f / 64.f; break;
+			case 5: fCutVal = 1.f - 50.f / 64.f; break;
+			case 6: fCutVal = 0.f; break;
+			case 7: fCutVal = 0.f; break;
         }
-        if (m_Class.pImage)
-            m_Class.pImage->CutSide(0.f, fCutVal, 0.f, 0.f);
+        if (m_Class.pImage) m_Class.pImage->CutSide(0.f, fCutVal, 0.f, 0.f);
     }
     else
     {
-        if (m_Class.pImage)
-            m_Class.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_Class.pImage) m_Class.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
 
     if (nShipCrew >= 0)
@@ -670,14 +675,11 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
         m_txtShipCrew.sText = "";
     }
 
-    if (fRelativeHP < 0)
-        fRelativeHP = 0.f;
-    if (m_ShipHP.pImage)
-        m_ShipHP.pImage->CutSide(0.f, 0.f, 1.f - fRelativeHP, 0.f);
-    if (fRelativeSP < 0)
-        fRelativeSP = 0.f;
-    if (m_ShipSP.pImage)
-        m_ShipSP.pImage->CutSide(0.f, 0.f, 1.f - fRelativeSP, 0.f);
+    if (fRelativeHP < 0) fRelativeHP = 0.f;
+    if (m_ShipHP.pImage) m_ShipHP.pImage->CutSide(0.f, 0.f, 1.f - fRelativeHP, 0.f);
+	
+    if (fRelativeSP < 0) fRelativeSP = 0.f;
+    if (m_ShipSP.pImage) m_ShipSP.pImage->CutSide(0.f, 0.f, 1.f - fRelativeSP, 0.f);
 
     if (nNation >= 0 && nNation < m_aNationUV.size())
     {
@@ -689,8 +691,7 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
-        if (m_Nation.pImage)
-            m_Nation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_Nation.pImage) m_Nation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
 
     if (nCharge >= 0 && nCharge < m_aChargeUV.size())
@@ -703,23 +704,19 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
     }
     else
     {
-        if (m_Charge.pImage)
-            m_Charge.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
+        if (m_Charge.pImage) m_Charge.pImage->CutSide(0.f, 1.f, 0.f, 0.f); // hide
     }
 
-    if (nSailState >= 0 && nSailState < m_aSailUV.size())
-    {
-        if (m_Sail.pImage)
-        {
-            m_Sail.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
-            m_Sail.pImage->SetUV(m_aSailUV[nSailState]);
-        }
-    }
-    else
-    {
-        if (m_Sail.pImage)
-            m_Sail.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
-    }
+    //hold
+	m_TextHoldCapacity.sText = pcHoldCapacity;
+	if (m_TextHoldCapacity.sText != "")
+	{
+		if (m_Hold.pImage) m_Hold.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+	}
+	else
+	{
+		if (m_Hold.pImage) m_Hold.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+	}
 
     if (m_CaptainFace.pImage)
     {
@@ -735,74 +732,63 @@ void ISPYGLASS::ChangeTargetData(const char *pcShipName, const char *pcShipType,
         m_CaptainFace.ChangeIcon(m_pImgRender, param, frUV);
     }
     // further edit the skill icons to hide / show
-    if (nFencing >= 0)
+    if (nDefence >= 0)
     {
-        sprintf_s(param, sizeof(param), "%d", nFencing);
-        m_TextCaptainFencing.sText = param;
-        if (m_ImgCaptainFencing.pImage)
-            m_ImgCaptainFencing.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+        sprintf_s(param, sizeof(param), "%d", nDefence);
+        m_TextCaptainDefence.sText = param;
+        if (m_ImgCaptainDefence.pImage) m_ImgCaptainDefence.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
-        m_TextCaptainFencing.sText.clear();
-        if (m_ImgCaptainFencing.pImage)
-            m_ImgCaptainFencing.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        m_TextCaptainDefence.sText.clear();
+        if (m_ImgCaptainDefence.pImage) m_ImgCaptainDefence.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
 
     if (nCannon >= 0)
     {
         sprintf_s(param, sizeof(param), "%d", nCannon);
         m_TextCaptainCannon.sText = param;
-        if (m_ImgCaptainCannon.pImage)
-            m_ImgCaptainCannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+        if (m_ImgCaptainCannon.pImage) m_ImgCaptainCannon.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
         m_TextCaptainCannon.sText.clear();
-        if (m_ImgCaptainCannon.pImage)
-            m_ImgCaptainCannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_ImgCaptainCannon.pImage) m_ImgCaptainCannon.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
     if (nAccuracy >= 0)
     {
         sprintf_s(param, sizeof(param), "%d", nAccuracy);
         m_TextCaptainAccuracy.sText = param;
-        if (m_ImgCaptainAccuracy.pImage)
-            m_ImgCaptainAccuracy.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+        if (m_ImgCaptainAccuracy.pImage) m_ImgCaptainAccuracy.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
         m_TextCaptainAccuracy.sText.clear();
-        if (m_ImgCaptainAccuracy.pImage)
-            m_ImgCaptainAccuracy.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_ImgCaptainAccuracy.pImage) m_ImgCaptainAccuracy.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
     if (nNavigation >= 0)
     {
         sprintf_s(param, sizeof(param), "%d", nNavigation);
         m_TextCaptainNavigation.sText = param;
-        if (m_ImgCaptainNavigation.pImage)
-            m_ImgCaptainNavigation.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+        if (m_ImgCaptainNavigation.pImage) m_ImgCaptainNavigation.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
         m_TextCaptainNavigation.sText.clear();
-        if (m_ImgCaptainNavigation.pImage)
-            m_ImgCaptainNavigation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_ImgCaptainNavigation.pImage) m_ImgCaptainNavigation.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
     if (nBoarding >= 0)
     {
         sprintf_s(param, sizeof(param), "%d", nBoarding);
         m_TextCaptainBoarding.sText = param;
-        if (m_ImgCaptainBoarding.pImage)
-            m_ImgCaptainBoarding.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
+        if (m_ImgCaptainBoarding.pImage) m_ImgCaptainBoarding.pImage->CutSide(0.f, 0.f, 0.f, 0.f);
     }
     else
     {
         m_TextCaptainBoarding.sText.clear();
-        if (m_ImgCaptainBoarding.pImage)
-            m_ImgCaptainBoarding.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
+        if (m_ImgCaptainBoarding.pImage) m_ImgCaptainBoarding.pImage->CutSide(0.f, 1.f, 0.f, 0.f);
     }
     m_TextCaptainName.sText = pcCaptainName;
-	m_TextHoldCapacity.sText = pcHoldCapacity; //ענ‏ל
 }
 
 void ISPYGLASS::FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const

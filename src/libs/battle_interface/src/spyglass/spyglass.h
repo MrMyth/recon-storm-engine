@@ -123,7 +123,7 @@ class ISPYGLASS : public Entity
     ImageParam m_ShipSP;    // ship SP
     ImageParam m_Class;     // ship class
 
-	//трюм
+	//hold
 	ImageParam m_Hold;
 	TextParam m_TextHoldCapacity;
 
@@ -132,8 +132,8 @@ class ISPYGLASS : public Entity
     ImageParam m_CaptainFace;    // captain face image
     TextParam m_TextCaptainName; // captain name
     // captain skills
-    ImageParam m_ImgCaptainFencing;
-    TextParam m_TextCaptainFencing;
+    ImageParam m_ImgCaptainDefence;
+    TextParam m_TextCaptainDefence;
     ImageParam m_ImgCaptainCannon;
     TextParam m_TextCaptainCannon;
     ImageParam m_ImgCaptainAccuracy;
@@ -151,13 +151,14 @@ class ISPYGLASS : public Entity
     ImageParam m_Sail;
     // cannon charge icon
     ImageParam m_Charge;
-
     // BOAL distance charge icon
     ImageParam m_SailTo;
 
     TextParam m_txtShipType;
     TextParam m_txtShipName;
-    TextParam m_txtCannons;
+	//TextParam m_txtCannons;
+	TextParam m_textCannonsType;
+	TextParam m_textCannonsQuantity;
     TextParam m_txtShipSpeed;
     TextParam m_txtShipCrew;
     TextParam m_txtSailTo; // boal
@@ -186,8 +187,8 @@ class ISPYGLASS : public Entity
     void ChangeTelescopeType(const char *pcTextureName, float fZoomScale, float fActivateTime, float fUpdateTime);
     void UpdateCamera();
     void ChangeTargetData(const char *pcShipName, const char *pcShipType, float fRelativeHP, float fRelativeSP,
-                          int32_t nShipCrew, float fShipSpeed, float fSailTo, int32_t nCurCannons, int32_t nMaxCannons,
-                          int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nFencing, int32_t nCannon,
+                          int32_t nShipCrew, float fShipSpeed, float fSailTo, const char *pcCannonsType, const char *pcCannonsQuantity,
+                          int32_t nCharge, int32_t nNation, int32_t nSailState, int32_t nFace, int32_t nDefence, int32_t nCannon,
                           int32_t nAccuracy, int32_t nNavigation, int32_t nBoarding, const char *pcCaptainName,
                           const char *pcFaceTexture, int32_t nShipClass, const char *pcHoldCapacity);
     void FillUVArrayFromAttributes(std::vector<FRECT> &m_aUV, ATTRIBUTES *pA) const;
