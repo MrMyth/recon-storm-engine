@@ -36,8 +36,10 @@ class ActivePerkShower : public Entity
 
     int32_t m_idVBuf;
     int32_t m_idIBuf;
+    int32_t nFont;
+
     void FillVIBuffers();
-    void FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex);
+    void FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex, const uint32_t color);
 
     size_t m_nTextureQ;
 
@@ -72,6 +74,8 @@ class ActivePerkShower : public Entity
     {
         int32_t m_nPicNum;
         int32_t m_nPicTexIdx;
+        // AlexBlade - цвет иконки
+        uint32_t color;
     } * m_pIconsList;
 
     bool InitIconsList(ATTRIBUTES *pAIconsRoot);
@@ -79,4 +83,19 @@ class ActivePerkShower : public Entity
     void DelIconFromList(ATTRIBUTES *pAIconDescr);
 
     bool InitCommonBuffers();
+
+    // AlexBlade - параметры шрифта->
+    int fontCharHeight;
+
+    struct _ICONTEXT_DESCR
+    {
+        const char *text;
+        float fontScale;
+        uint32_t fontColor;
+        bool b_fontShadow;
+    } * m_pIconTextList;
+
+    void SetIconStyle(ATTRIBUTES *pAIconDescr);
+    void SetIconText(ATTRIBUTES *pAIconDescr);
+    // <- AlexBlade
 };

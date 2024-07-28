@@ -84,12 +84,13 @@ technique battle_rectangle
         AlphaTestEnable = false;
         AlphaBlendEnable = true;
         ZEnable = false;
-        ColorVertex = false;
+        ColorVertex = true;
         addressu[0] = clamp;
         addressv[0] = clamp;
 
-        ColorOp[0] = SelectArg1;
+        ColorOp[0] = modulate;
         ColorArg1[0] = texture;
+        ColorArg2[0] = diffuse;
 
         AlphaOp[0] = SelectArg1;
         AlphaArg1[0] = texture;

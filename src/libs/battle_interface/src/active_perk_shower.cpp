@@ -13,6 +13,8 @@ ActivePerkShower::ActivePerkShower()
 
     m_idVBuf = -1;
     m_idIBuf = -1;
+    nFont = -1;
+    fontCharHeight = 0;
 
     m_nTextureQ = 0;
     m_pTexDescr = nullptr;
@@ -22,6 +24,8 @@ ActivePerkShower::ActivePerkShower()
 
     m_nIShowQ = 0;
     m_pIconsList = nullptr;
+
+    m_pIconTextList = nullptr;
 }
 
 ActivePerkShower::~ActivePerkShower()
@@ -52,6 +56,13 @@ bool ActivePerkShower::Init()
         ReleaseAll();
         return false;
     }
+    if ((nFont = rs->LoadFont("interface_normal")) == -1)
+    {
+        ReleaseAll();
+        return false;
+    }
+    fontCharHeight = rs->CharHeight(nFont);
+
     return true;
 }
 
@@ -70,9 +81,28 @@ void ActivePerkShower::Realize(uint32_t delta_time) const
         if (m_pTexDescr[i].m_nPicsQ == 0)
             continue;
         rs->TextureSet(0, m_pTexDescr[i].m_idTexture);
-        rs->DrawBuffer(m_idVBuf, sizeof(BI_ONETEXTURE_VERTEX), m_idIBuf, m_pTexDescr[i].m_nVertStart,
+        rs->DrawBuffer(m_idVBuf, sizeof(BI_COLOR_VERTEX), m_idIBuf, m_pTexDescr[i].m_nVertStart,
                        m_pTexDescr[i].m_nPicsQ * 4, m_pTexDescr[i].m_nIndxStart, m_pTexDescr[i].m_nPicsQ * 2,
                        "battle_rectangle");
+
+        
+    }
+
+    for (auto i = 0; i < m_nIShowQ; i++)
+    {
+        const char *text = m_pIconTextList[i].text;
+        if (text == "")
+            continue;
+
+        uint32_t fontColor = m_pIconTextList[i].fontColor;
+        float fontScale = m_pIconTextList[i].fontScale;
+        bool b_fontShadow = m_pIconTextList[i].b_fontShadow;
+        int posX = (int)(m_pShowPlaces[i].left + (m_pShowPlaces[i].right - m_pShowPlaces[i].left) / 2);
+        int posY = (int)(m_pShowPlaces[i].top + (m_pShowPlaces[i].bottom - m_pShowPlaces[i].top) / 2) -
+                   (int)(fontScale * fontCharHeight) / 2;
+
+
+        rs->ExtPrint(nFont, fontColor, 0, PR_ALIGN_CENTER, b_fontShadow, fontScale, 0, 0, posX, posY, "%s", text);
     }
 }
 
@@ -87,6 +117,10 @@ uint64_t ActivePerkShower::ProcessMessage(MESSAGE &message)
             AddIconToList(pA);
         else if (storm::iEquals(param, "del"))
             DelIconFromList(pA);
+        else if (storm::iEquals(param, "setStyle"))
+            SetIconStyle(pA);
+        else if (storm::iEquals(param, "setText"))
+            SetIconText(pA);
     }
     break;
     case MSG_ACTIVE_PERK_ICON_REFRESH:
@@ -133,6 +167,57 @@ bool ActivePerkShower::CreateTextures(ATTRIBUTES *pATextureRoot)
 
     m_nTextureQ = q;
     return true;
+}
+
+void ActivePerkShower::SetIconStyle(ATTRIBUTES *pAIconDescr)
+{
+    if (pAIconDescr == nullptr)
+        return;
+    const int picNum = pAIconDescr->GetAttributeAsDword("pic_idx");
+    const int texNum = pAIconDescr->GetAttributeAsDword("texture");
+
+    const uint32_t iconColor = pAIconDescr->GetAttributeAsDword("iconColor", ARGB(255, 255, 255, 255));
+    const bool bFontShadow = pAIconDescr->GetAttributeAsDword("bTextShadow", true);
+    const float fontScale = pAIconDescr->GetAttributeAsFloat("textScale", 1.0f);
+    const uint32_t fontColor = pAIconDescr->GetAttributeAsDword("textColor", ARGB(255, 255, 255, 255));
+
+    for (auto i = 0; i < m_nIShowQ; i++)
+    {
+        if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
+        {
+            m_pIconsList[i].color = iconColor;
+
+            m_pIconTextList[i].fontScale = fontScale;
+            m_pIconTextList[i].fontColor = fontColor;
+            m_pIconTextList[i].b_fontShadow = bFontShadow;
+            break;
+        }
+    }
+
+    FillVIBuffers();
+}
+
+void ActivePerkShower::SetIconText(ATTRIBUTES *pAIconDescr)
+{
+    if (pAIconDescr == nullptr)
+        return;
+    const int picNum = pAIconDescr->GetAttributeAsDword("pic_idx");
+    const int texNum = pAIconDescr->GetAttributeAsDword("texture");
+
+    const char *text;
+    if ((text = pAIconDescr->GetAttribute("text")) == nullptr)
+    {
+        text = "";
+    }
+
+    for (auto i = 0; i < m_nIShowQ; i++)
+    {
+        if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
+        {
+            m_pIconTextList[i].text = text;
+            break;
+        }
+    }
 }
 
 bool ActivePerkShower::CreateShowPlaces(ATTRIBUTES *pAPlacesRoot)
@@ -229,11 +314,13 @@ bool ActivePerkShower::InitIconsList(ATTRIBUTES *pAIconsRoot)
     {
         m_pIconsList[i].m_nPicNum = 0;
         m_pIconsList[i].m_nPicTexIdx = 0;
+        m_pIconsList[i].color = ARGB(255,255,255,255);
         auto *pA = pAIconsRoot->GetAttributeClass(i);
         if (pA != nullptr)
         {
             m_pIconsList[i].m_nPicNum = pA->GetAttributeAsDword("texture", 0);
             m_pIconsList[i].m_nPicTexIdx = pA->GetAttributeAsDword("pic_idx", 0);
+            m_pIconsList[i].color = pA->GetAttributeAsDword("iconColor", ARGB(255, 255, 255, 255));
         }
     }
 
@@ -247,6 +334,16 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
         return;
     const int picNum = pAItemDescr->GetAttributeAsDword("pic_idx");
     const int texNum = pAItemDescr->GetAttributeAsDword("texture");
+    const uint32_t iconColor = pAItemDescr->GetAttributeAsDword("iconColor", ARGB(255, 255, 255, 255));
+
+    const char *text;
+    if ((text = pAItemDescr->GetAttribute("text")) == nullptr)
+    {
+        text = "";
+    }
+    const bool bFontShadow = pAItemDescr->GetAttributeAsDword("bTextShadow", true);
+    const float fontScale = pAItemDescr->GetAttributeAsFloat("textScale", 1.0f);
+    const uint32_t fontColor = pAItemDescr->GetAttributeAsDword("textColor", ARGB(255, 255, 255, 255));
 
     if (m_pIconsList != nullptr)
     {
@@ -278,6 +375,30 @@ void ActivePerkShower::AddIconToList(ATTRIBUTES *pAItemDescr)
     }
     m_pIconsList[m_nIShowQ - 1].m_nPicTexIdx = texNum;
     m_pIconsList[m_nIShowQ - 1].m_nPicNum = picNum;
+    m_pIconsList[m_nIShowQ - 1].color = iconColor;
+
+    if (m_pIconTextList == nullptr)
+    {
+        m_pIconTextList = new _ICONTEXT_DESCR[m_nIShowQ];
+    }
+    else
+    {
+        auto *const old_pIconTextList = m_pIconTextList;
+        m_pIconTextList = new _ICONTEXT_DESCR[m_nIShowQ];
+        if (m_pIconTextList != nullptr)
+        {
+            memcpy(m_pIconTextList, old_pIconTextList, sizeof(_ICONTEXT_DESCR) * (m_nIShowQ - 1));
+        }
+        delete old_pIconTextList;
+    }
+    if (m_pIconTextList == nullptr)
+    {
+        throw std::runtime_error("allocate memory error");
+    }
+    m_pIconTextList[m_nIShowQ - 1].text = text;
+    m_pIconTextList[m_nIShowQ - 1].fontScale = fontScale;
+    m_pIconTextList[m_nIShowQ - 1].fontColor = fontColor;
+    m_pIconTextList[m_nIShowQ - 1].b_fontShadow = bFontShadow;
 
     FillVIBuffers();
 }
@@ -296,6 +417,12 @@ void ActivePerkShower::DelIconFromList(ATTRIBUTES *pAIconDescr)
         {
             m_pIconsList[i - 1].m_nPicTexIdx = m_pIconsList[i].m_nPicTexIdx;
             m_pIconsList[i - 1].m_nPicNum = m_pIconsList[i].m_nPicNum;
+            m_pIconsList[i - 1].color = m_pIconsList[i].color;
+
+            m_pIconTextList[i - 1].text = m_pIconTextList[i].text;
+            m_pIconTextList[i - 1].fontScale = m_pIconTextList[i].fontScale;
+            m_pIconTextList[i - 1].fontColor = m_pIconTextList[i].fontColor;
+            m_pIconTextList[i - 1].b_fontShadow = m_pIconTextList[i].b_fontShadow;
             continue;
         }
         if (texNum == m_pIconsList[i].m_nPicTexIdx && picNum == m_pIconsList[i].m_nPicNum)
@@ -312,7 +439,7 @@ void ActivePerkShower::FillVIBuffers()
 {
     int pi, ti, start_idx;
 
-    auto *pvb = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
+    auto *pvb = static_cast<BI_COLOR_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
     if (pvb == nullptr)
         return;
 
@@ -326,7 +453,8 @@ void ActivePerkShower::FillVIBuffers()
             if (m_pIconsList[pi].m_nPicTexIdx != ti)
                 continue;
             m_pTexDescr[ti].m_nPicsQ++;
-            FillRectData(&pvb[start_idx * 4], m_pShowPlaces[pi], GetTextureRect(ti, m_pIconsList[pi].m_nPicNum));
+            FillRectData(&pvb[start_idx * 4], m_pShowPlaces[pi], GetTextureRect(ti, m_pIconsList[pi].m_nPicNum),
+                         m_pIconsList[pi].color);
             start_idx++;
         }
     }
@@ -334,11 +462,11 @@ void ActivePerkShower::FillVIBuffers()
     rs->UnLockVertexBuffer(m_idVBuf);
 }
 
-void ActivePerkShower::FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex)
+void ActivePerkShower::FillRectData(void *vbuf, const FRECT &rectPos, const FRECT &rectTex, const uint32_t color)
 {
     if (vbuf == nullptr)
         return;
-    auto *ptmp = static_cast<BI_ONETEXTURE_VERTEX *>(vbuf);
+    auto *ptmp = static_cast<BI_COLOR_VERTEX *>(vbuf);
     ptmp[0].pos.x = rectPos.left;
     ptmp[0].pos.y = rectPos.top;
     ptmp[1].pos.x = rectPos.left;
@@ -356,6 +484,11 @@ void ActivePerkShower::FillRectData(void *vbuf, const FRECT &rectPos, const FREC
     ptmp[2].tv = rectTex.top;
     ptmp[3].tu = rectTex.right;
     ptmp[3].tv = rectTex.bottom;
+
+    ptmp[0].col = color;
+    ptmp[1].col = color;
+    ptmp[2].col = color;
+    ptmp[3].col = color;
 }
 
 FRECT ActivePerkShower::GetTextureRect(int textIdx, int picIdx) const
@@ -375,7 +508,8 @@ FRECT ActivePerkShower::GetTextureRect(int textIdx, int picIdx) const
 
 bool ActivePerkShower::InitCommonBuffers()
 {
-    m_idVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, m_nShowPlaceQ * 4 * sizeof(BI_ONETEXTURE_VERTEX),
+    m_idVBuf =
+        rs->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nShowPlaceQ * 4 * sizeof(BI_COLOR_VERTEX),
                                       D3DUSAGE_WRITEONLY);
     m_idIBuf = rs->CreateIndexBuffer(m_nShowPlaceQ * 6 * 2);
     if (m_idIBuf == -1 || m_idVBuf == -1)
@@ -394,11 +528,12 @@ bool ActivePerkShower::InitCommonBuffers()
     }
     rs->UnLockIndexBuffer(m_idIBuf);
 
-    auto *pvbuf = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
+    auto *pvbuf = static_cast<BI_COLOR_VERTEX *>(rs->LockVertexBuffer(m_idVBuf));
     for (i = 0; i < m_nShowPlaceQ * 4; i++)
     {
         pvbuf[i].pos.z = 1.f;
         pvbuf[i].w = .5f;
+        pvbuf[i].col = ARGB(255, 255, 255, 255);
     }
     rs->UnLockVertexBuffer(m_idVBuf);
 
@@ -411,6 +546,7 @@ void ActivePerkShower::ReleaseAll()
 
     VERTEX_BUFFER_RELEASE(rs, m_idVBuf);
     INDEX_BUFFER_RELEASE(rs, m_idIBuf);
+    FONT_RELEASE(rs, nFont);
 
     for (i = 0; i < m_nTextureQ; i++)
         TEXTURE_RELEASE(rs, m_pTexDescr[i].m_idTexture);
@@ -422,4 +558,6 @@ void ActivePerkShower::ReleaseAll()
 
     STORM_DELETE(m_pIconsList);
     m_nIShowQ = 0;
+
+    STORM_DELETE(m_pIconTextList);
 }
