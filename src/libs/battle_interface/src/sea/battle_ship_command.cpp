@@ -369,7 +369,7 @@ int32_t BIShipCommandList::ChargeAdding()
         const int32_t nNormalPicIndex = pA ? pA->GetAttributeAsDword("picNum", -1) : -1;
         const int32_t nSelectPicIndex = pA ? pA->GetAttributeAsDword("selPicNum", -1) : -1;
         retVal += AddToIconList(m_nChargeTextureNum, nNormalPicIndex, nSelectPicIndex, -1, -1, nullptr, i + 1, nullptr,
-                                nullptr);
+                                pA->GetAttribute("note"));
     }
     return retVal;
 }
