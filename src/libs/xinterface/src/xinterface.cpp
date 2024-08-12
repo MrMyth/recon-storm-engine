@@ -1556,6 +1556,8 @@ CINODE *XINTERFACE::NewNode(const char *pcNodType)
         pNewNod = new CXI_TABLE;
     else if (storm::iEquals(pcNodType, "FRAME"))
         pNewNod = new CXI_BORDER;
+    else if (storm::iEquals(pcNodType, "MODELVIEWER"))
+        pNewNod = new CXI_MODELVIEWER;
     else if (storm::iEquals(pcNodType, "CONTEXTHELP"))
         m_pContHelp = pNewNod = new CXI_CONTEXTHELP;
     else if (storm::iEquals(pcNodType, "GLOWCURSOR"))

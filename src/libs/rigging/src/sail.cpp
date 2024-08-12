@@ -528,6 +528,59 @@ void SAIL::Execute(uint32_t Delta_Time)
     }
 }
 
+void SAIL::ExecuteForMV(uint32_t Delta_Time, float gWindAngle)
+{
+    if (bFirstRun)
+    {
+        FirstRun();
+        wFirstIndx = sailQuantity;
+    }
+    if (bDeleteState)
+    {
+        DeleteSailGroup();
+        wFirstIndx = sailQuantity;
+    }
+
+    auto fMaxTurnAngl = Delta_Time * TURNSTEPANGL;
+    globalWind.ang.x = gWindAngle;
+    globalWind.base = 0.1f / WIND_SPEED_MAX;
+
+    auto bSailUpdate = false;
+    m_nLastUpdate -= Delta_Time;
+    if (m_nLastUpdate <= 0)
+    {
+        m_nLastUpdate = GROUP_UPDATE_TIME;
+        bSailUpdate = true;
+    }
+
+    if (bUse)
+    {
+        int i;
+
+        uint64_t rtime;
+        RDTSC_B(rtime);
+
+        auto *pv = static_cast<SAILVERTEX *>(RenderService->LockVertexBuffer(sg.vertBuf));
+        if (pv)
+        {
+            for (i = 0; i < sailQuantity; i++)
+            {
+                if (gdata[slist[i]->HostNum].bDeleted)
+                    continue;
+                // make sails sway
+                slist[i]->goWave(&pv[slist[i]->ss.sVert], Delta_Time);
+            }
+
+            RenderService->UnLockVertexBuffer(sg.vertBuf);
+        }
+        
+        // initializing ray tracing parameters
+        LastTraceGroup = 0;
+        RDTSC_E(rtime);
+        tm.idx = rtime;
+    }
+}
+
 void SAIL::Realize(uint32_t Delta_Time)
 {
     uint32_t dwOldTextureFactor;

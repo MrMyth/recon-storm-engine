@@ -251,6 +251,7 @@ class SHIP : public SHIP_BASE
     bool Init() override;
     void Realize(uint32_t Delta_Time);
     void Execute(uint32_t Delta_Time);
+    void ExecuteForMV(uint32_t DeltaTime);
     uint64_t ProcessMessage(MESSAGE &message) override;
     uint32_t AttributeChanged(ATTRIBUTES *pAttribute) override;
 

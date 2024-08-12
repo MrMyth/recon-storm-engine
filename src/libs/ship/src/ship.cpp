@@ -550,6 +550,35 @@ void SHIP::SetDead()
     }
 }
 
+void SHIP::ExecuteForMV(uint32_t DeltaTime)
+{
+    auto *pARocking = GetAShip()->GetAttributeClass("Rocking");
+
+    if (pARocking)
+    {
+        fRockingY = pARocking->GetAttributeAsFloat("y", 1.0f);
+        fRockingAZ = pARocking->GetAttributeAsFloat("az", 1.0f);
+    }
+
+    auto fDeltaTime = Min(0.1f, static_cast<float>(DeltaTime) * 0.001f);
+
+    if (!bMounted)
+        return;
+    // CalculateImmersion
+    State.fShipImmersion = 0.0f;
+
+    vPos = State.vPos;
+    vAng = State.vAng;
+
+    State.vAng = ShipRocking(DELTA_TIME(DeltaTime));
+
+    mRoot = CMatrix(vAng.x, vAng.y, vAng.z, vPos.x + fXOffset,
+                    vPos.y - State.fShipImmersion - SP.fWaterLine, vPos.z + fZOffset);
+    SetMatrix(mRoot);
+
+    UpdateModelMatrix();
+}
+
 void SHIP::Execute(uint32_t DeltaTime)
 {
     auto *pAPerks = GetACharacter()->FindAClass(GetACharacter(), "TmpPerks");
@@ -1227,6 +1256,46 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         Mount(message.AttributePointer());
         LoadPositionFromAttributes();
         break;
+    case MSG_SHIP_INIT_FOR_MV: {
+        SetACharacter(message.AttributePointer());
+        
+        auto _pAShip = message.AttributePointer();
+        Assert(_pAShip);
+        pAShip = _pAShip;
+
+        model_id = message.EntityID();
+        auto sea_id = message.EntityID();
+        LoadShipParameters();
+
+        if (sea_id != -1)
+        {
+            pSea = static_cast<SEA_BASE *>(core.GetEntityPointer(sea_id));
+            core.AddToLayer(SEA_REFLECTION2, GetId(), 100);
+            core.Send_Message(sea_id, "lic", MSG_SHIP_CREATE, GetId(),
+                              CVECTOR(State.vPos.x, State.vPos.y, State.vPos.z));
+            State.vPos.y = pSea->WaveXZ(State.vPos.x, State.vPos.z);
+        }
+
+        GEOS::INFO ginfo;
+        MODEL *pModel = GetModel();
+        Assert(pModel);
+        NODE *pNode = pModel->GetNode(0);
+        Assert(pNode);
+        pNode->geo->GetInfo(ginfo);
+
+        CalcRealBoxsize();
+
+        State.vBoxSize.x = ginfo.boxsize.x;
+        State.vBoxSize.y = ginfo.boxsize.y;
+        State.vBoxSize.z = ginfo.boxsize.z;
+
+        SP.fLength = State.vBoxSize.z;
+        SP.fWidth = State.vBoxSize.x;
+        fGravity = 9.81f;
+
+        bMounted = true;
+    }
+    break;
     case MSG_SHIP_SET_SAIL_STATE:
         SetSailState(message.Float());
         break;

@@ -123,6 +123,50 @@ void FLAG::Execute(uint32_t Delta_Time)
     }
 }
 
+void FLAG::ExecuteForMV(uint32_t Delta_Time, float gWindAngle)
+{
+    if (bFirstRun)
+    {
+        FirstRun();
+    }
+    else
+    {
+        SetTextureCoordinate();
+    }
+
+    if (bYesDeleted)
+        DoSTORM_DELETE();
+    if (bUse)
+    {
+        // ====================================================
+        // If the ini-file has been changed, read the info from it
+        if (fio->_FileOrDirectoryExists(RIGGING_INI_FILE))
+        {
+            auto ft_new = fio->_GetLastWriteTime(RIGGING_INI_FILE);
+            if (ft_old != ft_new)
+            {
+                LoadIni();
+            }
+        }
+
+        // get the wind value
+        globalWind.ang.x = gWindAngle;
+        globalWind.ang.z = cosf(globalWind.ang.x);
+        globalWind.ang.x = sinf(globalWind.ang.x);
+        globalWind.base = 0.1f / fWindMaxValue;
+
+        // calculation of the shape of the flag
+        vertBuf = static_cast<FLAGLXVERTEX *>(RenderService->LockVertexBuffer(vBuf));
+        if (vertBuf)
+        {
+            const auto dt = static_cast<float>(Delta_Time) * 0.02f;
+            for (auto fn = 0; fn < flagQuantity; fn++)
+                DoMove(flist[fn], dt);
+            RenderService->UnLockVertexBuffer(vBuf);
+        }
+    }
+}
+
 void FLAG::Realize(uint32_t Delta_Time)
 {
     if (bUse)
