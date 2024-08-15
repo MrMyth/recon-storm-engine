@@ -23,6 +23,7 @@ class CXI_SCROLLIMAGE : public CINODE
         int32_t ptex = -1;
         int32_t img = -1;
         std::string saveName;
+        uint32_t color;
     };
 
     struct IMAGEDESCRIBE
@@ -117,6 +118,7 @@ class CXI_SCROLLIMAGE : public CINODE
 
     char *m_sSpecTechniqueName;
     uint32_t m_dwSpecTechniqueARGB;
+    bool m_bUseIndividualColor; // AlexBlade - use individual normal color instead of m_dwNormalColor
 
     // one string parameters
     float m_nOneStrScale;

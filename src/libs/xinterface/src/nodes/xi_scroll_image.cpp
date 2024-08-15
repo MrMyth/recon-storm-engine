@@ -246,7 +246,26 @@ void CXI_SCROLLIMAGE::Draw(bool bSelected, uint32_t Delta_Time)
                 v[0].tv = v[2].tv = rectTex.top;
                 v[1].tv = v[3].tv = rectTex.bottom;
                 if (pScroll == m_pScroll)
-                    v[0].color = v[1].color = v[2].color = v[3].color = m_dwCurColor[n];
+                {
+                    if (m_bUseIndividualColor)
+                    {
+                        uint32_t picColor = m_Image[pScroll->imageNum].slots[n].color;
+                        uint32_t newPicColorA =
+                            static_cast<uint32_t>(ALPHA(picColor) * (static_cast<float>(ALPHA(m_dwCurColor[n])) / 255));
+                        uint32_t newPicColorR =
+                            static_cast<uint32_t>(RED(picColor) * (static_cast<float>(RED(m_dwCurColor[n])) / 255));
+                        uint32_t newPicColorG =
+                            static_cast<uint32_t>(GREEN(picColor) * (static_cast<float>(GREEN(m_dwCurColor[n])) / 255));
+                        uint32_t newPicColorB =
+                            static_cast<uint32_t>(BLUE(picColor) * (static_cast<float>(BLUE(m_dwCurColor[n])) / 255));
+
+                        v[0].color = v[1].color = v[2].color = v[3].color = ARGB(newPicColorA, newPicColorR, newPicColorG, newPicColorB);
+                    }
+                    else
+                        v[0].color = v[1].color = v[2].color = v[3].color = m_dwCurColor[n];
+                }
+                else if (m_bUseIndividualColor)
+                    v[0].color = v[1].color = v[2].color = v[3].color = m_Image[pScroll->imageNum].slots[n].color;
                 else
                     v[0].color = v[1].color = v[2].color = v[3].color = m_dwNormalColor[n];
                 if (m_Image[pScroll->imageNum].slots[n].useSpecTechnique)
@@ -459,6 +478,7 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
             }
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
+        m_bUseIndividualColor = pAttribute->GetAttributeAsDword("UseIndividualColor", 0);
         // get images quantity
         size_t listSize = pAttribute->GetAttributeAsDword("ListSize", 0);
         m_nNotUsedQuantity = pAttribute->GetAttributeAsDword("NotUsed", 0);
@@ -597,6 +617,8 @@ void CXI_SCROLLIMAGE::LoadIni(INIFILE *ini1, const char *name1, INIFILE *ini2, c
                     }
                     sprintf_s(param, "spec%d", n + 1);
                     m_Image[i].slots[n].useSpecTechnique = pListEntity->GetAttributeAsDword(param, 0) != 0;
+                    sprintf_s(param, "color%d", n + 1);
+                    m_Image[i].slots[n].color = pListEntity->GetAttributeAsDword(param, 0);
                 }
             }
         }
@@ -1082,6 +1104,8 @@ void CXI_SCROLLIMAGE::ChangeScroll(int nScrollItemNum)
                     }
                     sprintf_s(param, "spec%d", n + 1);
                     m_Image[i].slots[n].useSpecTechnique = pAttribute->GetAttributeAsDword(param, 0) != 0;
+                    sprintf_s(param, "color%d", n + 1);
+                    m_Image[i].slots[n].color = pAttribute->GetAttributeAsDword(param, 0);
                 }
             }
         }
@@ -1177,6 +1201,7 @@ void CXI_SCROLLIMAGE::RefreshScroll()
             }
             memcpy(m_sSpecTechniqueName, sTechnique, len);
         }
+        m_bUseIndividualColor = pAttribute->GetAttributeAsDword("UseIndividualColor", 0);
         // get images quantity
         size_t listSize = pAttribute->GetAttributeAsDword("ListSize", 0);
         m_nNotUsedQuantity = pAttribute->GetAttributeAsDword("NotUsed", 0);
@@ -1317,6 +1342,8 @@ void CXI_SCROLLIMAGE::RefreshScroll()
                     }
                     sprintf_s(param, "spec%d", n + 1);
                     m_Image[i].slots[n].useSpecTechnique = pListEntity->GetAttributeAsDword(param, 0) != 0;
+                    sprintf_s(param, "color%d", n + 1);
+                    m_Image[i].slots[n].color = pListEntity->GetAttributeAsDword(param, 0);
                 }
             }
         }
