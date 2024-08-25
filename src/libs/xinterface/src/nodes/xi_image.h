@@ -30,6 +30,7 @@ class CXI_IMAGE
     void SetPosition(XYRECT &pos);
     void SetUV(float fLeft, float fTop, float fRight, float fBottom);
     void SetDifferentPosition(int32_t nLeft, int32_t nTop, int32_t nWidth, int32_t nHeight, ImagePointType ptype = IPType_LeftTop);
+    void SetTechnique(const char *pcTecniqueName);
 
     void SetColor(uint32_t dwColor);
 
@@ -82,6 +83,7 @@ class CXI_IMAGE
 
     XI_ONETEX_VERTEX m_vrtx[4];
     uint32_t m_dwImageColor;
+    char *m_pcTechiqueName;
 
     XYPOINT m_pntSize;
     XYPOINT m_pntLeftTop;

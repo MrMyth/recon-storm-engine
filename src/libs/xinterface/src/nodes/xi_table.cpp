@@ -371,6 +371,13 @@ void XI_TableCellDescribe::LoadImageParam(ImgDescribe *pImg, ATTRIBUTES *pA) con
             pImg->offset.y += nH;
         }
     }
+    //AlexBlade icon color
+    if (pA->GetAttribute("color"))
+    {
+        auto iconColor = pA->GetAttributeAsDword("color", 0);
+        pImg->pImage->SetColor(iconColor);
+        pImg->pImage->SetTechnique("iScrollImages_modulate1");
+    }
 }
 
 CXI_TABLE::CXI_TABLE()

@@ -34,6 +34,7 @@ CXI_IMAGE::CXI_IMAGE()
     m_pntLeftTop.x = m_pntLeftTop.y = 0;
 
     m_bThisIsColorRectangle = false;
+    m_pcTechiqueName = nullptr;
 }
 
 CXI_IMAGE::~CXI_IMAGE()
@@ -187,7 +188,8 @@ void CXI_IMAGE::Draw()
             m_rs->SetTexture(0, m_pTexture);
         else
             m_rs->TextureSet(0, m_nTextureID);
-        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), "iVideo");
+        auto _techniqueName = m_pcTechiqueName != nullptr ? m_pcTechiqueName : "iVideo";
+        m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_vrtx, sizeof(XI_ONETEX_VERTEX), _techniqueName);
     }
 }
 
@@ -284,6 +286,15 @@ void CXI_IMAGE::SetDifferentPosition(int32_t nLeft, int32_t nTop, int32_t nWidth
         if (bDoTextureUpdate && m_nPictureNum == -1 && m_pcPictureListName)
             UpdateTexture();
     }
+}
+
+// AlexBlade set technique for drawing
+void CXI_IMAGE::SetTechnique(const char *pcTecniqueName)
+{
+    if (pcTecniqueName == nullptr)
+        return;
+
+    m_pcTechiqueName = const_cast<char *>(pcTecniqueName);
 }
 
 void CXI_IMAGE::SetUV(float fLeft, float fTop, float fRight, float fBottom)
