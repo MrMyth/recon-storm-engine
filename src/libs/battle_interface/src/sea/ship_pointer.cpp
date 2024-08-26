@@ -6,6 +6,7 @@
 #include "message.h"
 #include "shared/battle_interface/msg_control.h"
 #include "ship_base.h"
+#include "shared/sea_ai/script_defines.h" //HardCoffee colour pointers
 
 // define the vertices
 #define SPV_FORMAT (D3DFVF_XYZ | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
@@ -67,7 +68,11 @@ bool SHIPPOINTER::Init()
     //"battle_interface\\shippointer.tga");
     m_idFriendTex = rs->TextureCreate(pA->GetAttribute("friend"));
     m_idEnemyTex = rs->TextureCreate(pA->GetAttribute("enemy"));
-
+	//HardCoffee colour pointers -->
+	m_idUnknownTex = rs->TextureCreate(pA->GetAttribute("unknown"));
+	m_idNeutralTex = rs->TextureCreate(pA->GetAttribute("neutral"));
+	m_idAllianceTex = rs->TextureCreate(pA->GetAttribute("alliance"));
+	// <--
     return true;
 }
 
@@ -92,11 +97,20 @@ void SHIPPOINTER::Realize(uint32_t delta_time) const
 
     CMatrix matw;
     rs->SetTransform(D3DTS_WORLD, matw);
-
+/*//HardCoffee colour pointers
     if (m_bFriend)
         rs->TextureSet(0, m_idFriendTex);
     else
         rs->TextureSet(0, m_idEnemyTex);
+*/
+	switch (m_iRelation)
+    {
+		case RELATION_UNKNOWN:	rs->TextureSet(0, m_idUnknownTex);	break;
+		case RELATION_FRIEND:	rs->TextureSet(0, m_idFriendTex);	break;
+		case RELATION_NEUTRAL:	rs->TextureSet(0, m_idNeutralTex);	break;
+		case RELATION_ENEMY: 	rs->TextureSet(0, m_idEnemyTex);	break;
+		case RELATION_ALLIANCE:	rs->TextureSet(0, m_idAllianceTex);	break;
+	}
 
     rs->DrawPrimitive(D3DPT_TRIANGLESTRIP, m_idVBuf, sizeof(SPV_VERTEX), 0, 2, "battle_shippointer");
 }
@@ -114,7 +128,7 @@ uint64_t SHIPPOINTER::ProcessMessage(MESSAGE &message)
             return 0;
         }
         m_bVisible = true;
-        m_bFriend = message.Long() != 0;
+        m_iRelation = message.Long();//m_bFriend= message.Long() != 0; //HardCoffee colour pointers
         m_fShiftVal = 0.f;
         m_fShiftSpeed = message.Float();
         m_fShiftAmp = message.Float();

@@ -36,11 +36,15 @@ class SHIPPOINTER : public Entity
     VAI_OBJBASE *FindShipByChrIndex(int32_t chrIdx) const;
 
     bool m_bVisible;
-    bool m_bFriend;
+    int32_t m_iRelation; //bool m_bFriend; //HardCoffee colour pointers
 
     int32_t m_idFriendTex;
     int32_t m_idEnemyTex;
-
+	//HardCoffee colour pointers -->	
+	int32_t	m_idUnknownTex;
+	int32_t m_idNeutralTex;
+	int32_t m_idAllianceTex;
+	// <--
     int32_t m_idVBuf;
 
     float m_fShiftVal;

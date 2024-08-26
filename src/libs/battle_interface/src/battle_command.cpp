@@ -151,9 +151,10 @@ int32_t BICommandList::ExecuteLeft()
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex;
         }
-        core.Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
-        UpdateShowIcon();
     }
+    else m_nSelectedCommandIndex = static_cast<int32_t>(m_aUsedCommand.size()) - 1; //HardCoffee the loop of commands
+    core.Event("evntBattleCommandSound", "s", "left"); // boal 22.08.06
+    UpdateShowIcon();
     return 0;
 }
 
@@ -166,9 +167,10 @@ int32_t BICommandList::ExecuteRight()
         {
             m_nStartUsedCommandIndex = m_nSelectedCommandIndex - m_nIconShowMaxQuantity + 1;
         }
-        core.Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
-        UpdateShowIcon();
     }
+    else m_nSelectedCommandIndex = 0; //HardCoffee the loop of commands
+    core.Event("evntBattleCommandSound", "s", "right"); // boal 22.08.06
+    UpdateShowIcon();
     return 0;
 }
 
