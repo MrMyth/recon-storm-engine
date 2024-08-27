@@ -55,6 +55,13 @@ void WM_INTERFACE::Realize(uint32_t delta_time)
                     m_nCommandMode = BI_COMMODE_COMMAND_SELECT;
                     UpdateCommandList();
                 }
+                core.Controls->GetControlState(BI_COMMANDS_ACTIVATE_ADD, cs); //HardCoffee additional activate command
+                if (cs.state == CST_ACTIVATED)
+                {
+                    m_pCommandList->SetActive(true);
+                    m_nCommandMode = BI_COMMODE_COMMAND_SELECT;
+                    UpdateCommandList();
+                }
             }
             else
             {
@@ -142,6 +149,14 @@ void WM_INTERFACE::MakeControl()
     core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
+    // HardCoffee additional commands
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
+
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_ACTIVATE);
 }
 
 void WM_INTERFACE::ExecuteCommand(int32_t command)

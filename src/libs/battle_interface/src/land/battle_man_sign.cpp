@@ -387,6 +387,14 @@ void BIManSign::MakeControl()
     core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
+    // HardCoffee additional commands
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_DEACTIVATE);
+
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(BI_MSG_COMMAND_ACTIVATE);
 }
 
 void BIManSign::ExecuteCommand(int32_t command)

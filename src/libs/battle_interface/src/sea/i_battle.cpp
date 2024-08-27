@@ -125,6 +125,11 @@ void BATTLE_INTERFACE::Execute(uint32_t delta_time)
                 {
                     m_pShipIcon->SetActive(true);
                 }
+                core.Controls->GetControlState(BI_COMMANDS_ACTIVATE_ADD, cs); //HardCoffee additional activate command
+                if (cs.state == CST_ACTIVATED)
+                {
+                    m_pShipIcon->SetActive(true);
+                }
             }
             else
             {

@@ -43,6 +43,10 @@
 #define BI_COMMANDS_UPSTEP "BICommandsUp"
 #define BI_COMMANDS_DOWNSTEP "BICommandsDown"
 #define BI_COMMANDS_CANCEL "BICommandsCancel"
+//HardCoffee additional control commands
+#define BI_COMMANDS_CANCEL_ADD "BICommandsCancelAdd"
+#define BI_COMMANDS_CONFIRM_ADD "BICommandsConfirmAdd"
+#define BI_COMMANDS_ACTIVATE_ADD "BICommandsActivateAdd"
 
 #define BI_ONETEX_VERTEX_FORMAT (D3DFVF_XYZRHW | D3DFVF_TEX1 | D3DFVF_TEXTUREFORMAT2)
 

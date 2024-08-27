@@ -365,6 +365,14 @@ void BIShipIcon::MakeControl()
     core.Controls->GetControlState(BI_COMMANDS_CANCEL, cs);
     if (cs.state == CST_ACTIVATED)
         ExecuteCommand(Command_cancel);
+    //HardCoffee additional commands
+    core.Controls->GetControlState(BI_COMMANDS_CANCEL_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(Command_cancel);
+
+    core.Controls->GetControlState(BI_COMMANDS_CONFIRM_ADD, cs);
+    if (cs.state == CST_ACTIVATED)
+        ExecuteCommand(Command_confirm);
 }
 
 void BIShipIcon::ExecuteCommand(CommandType command)
