@@ -1304,6 +1304,18 @@ uint64_t SHIP::ProcessMessage(MESSAGE &message)
         pV->Set(GetSailState());
     }
     break;
+    case MSG_SHIP_BROKE_MAST: {
+        const auto iMast = message.Long();
+        if (iMast < 4 && iMast > -1)
+        {
+            auto *pM = &pMasts[iMast];
+            pM->fDamage = 1.0f;
+            MastFall(pM);
+        }
+        else
+            core.Trace("Warning: MSG_SHIP_BROKE_MAST: The mast number must be in the range from 0 to 3 inclusive.");
+    }
+    break;
     case MSG_SHIP_SET_POS:
         pRS->GetCamera(cpos, cang, fov);
         State.vPos = cpos;

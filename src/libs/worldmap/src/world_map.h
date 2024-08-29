@@ -108,6 +108,8 @@ class WorldMap : public Entity
     // Utilities
     // Create a storm if possible
     bool CreateStorm(bool isTornado, float time = -1.0f, ATTRIBUTES *save = nullptr);
+    // Create a storm if possible
+    void ClearStorms(bool isClear);
     // Create a merchant's ship
     bool CreateMerchantShip(const char *modelName, const char *locNameStart, const char *locNameEnd, float kSpeed,
                             float time = -1.0f, ATTRIBUTES *save = nullptr);

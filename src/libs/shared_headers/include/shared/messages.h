@@ -62,6 +62,7 @@
 #define MSG_SHIP_CREATE 50300
 #define MSG_SHIP_DELETE 50301
 #define MSG_SHIP_SEA_INFO 50302
+#define MSG_SHIP_BROKE_MAST 50303 // "ll", broke mast l - num masts (0..n)
 #define MSG_SHIP_ACTIVATE_FIRE_PLACE 50304
 #define MSG_SHIP_SET_SAIL_STATE 50305
 #define MSG_SHIP_GET_NUM_FIRE_PLACES 50306
@@ -234,6 +235,7 @@
 // Storm
 #define MSG_WORLDMAP_CREATESTORM 31000      // "l" Create storm
 #define MSG_WORLDMAP_CREATESTORM_TIME 31001 // "lf" Create storm and specify lifetime in seconds
+#define MSG_WORLDMAP_CLEARSTORM 31002 // "l" Clear all storms
 // Encounter ships
 // Speed coefficient kSpeed determines the speed of the encounter relative to the player, 1.0 are the same, 1.2 is 20%
 // higher, 1.0 / 1.2 20% lower Merchant - event ship with merchant behavior (following to the island)

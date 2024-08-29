@@ -551,6 +551,11 @@ uint64_t WorldMap::ProcessMessage(MESSAGE &message)
         CreateStorm(isTornado);
     }
     break;
+    case MSG_WORLDMAP_CLEARSTORM: {
+        const auto isClear = message.Long() != 0;
+        ClearStorms(isClear);
+    }
+    break;
     case MSG_WORLDMAP_CREATEENC_MER: {
         const std::string &sName = message.String();
         const std::string &buf = message.String();
@@ -923,6 +928,19 @@ bool WorldMap::CreateStorm(bool isTornado, float time, ATTRIBUTES *save)
     s->SetSaveAttribute(save);
     s->isTornado = isTornado;
     return true;
+}
+
+// Clear all storms
+ void WorldMap::ClearStorms(bool isClear)
+{
+    if (isClear && wdmObjects->storms.size() > 0)
+    {
+        for (int32_t i = 0; i < wdmObjects->storms.size(); i++)
+        {
+            wdmObjects->storms[i]->killMe = true;
+            wdmObjects->storms[i]->SetSaveAttribute(nullptr);
+        }
+    }
 }
 
 // Create a merchant's ship
