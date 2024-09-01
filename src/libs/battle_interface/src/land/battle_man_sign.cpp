@@ -17,10 +17,12 @@ BIManSign::BIManSign(entid_t BIEntityID, VDX9RENDER *pRS)
     m_nIBufID = -1;
     m_nBackTextureID = -1;
     m_nManStateTextureID = -1;
+	m_nManStateTempTextureID = -1;
     m_nGunChargeTextureID = -1;
     m_nGunReloadTextureID = -1;
     m_nBackSquareQ = 0;
     m_nManStateSquareQ = 0;
+	m_nManStateTempSquareQ = 0;
     m_nGunChargeSquareQ = 0;
     m_nGunReloadSquareQ = 0;
     m_nMaxSquareQ = 0;
@@ -112,6 +114,14 @@ void BIManSign::Draw()
                               "battle_tex_col_Rectangle");
             nStartV += 4;
         }
+		
+		if (m_nManStateTempSquareQ > 0)
+        {
+            m_pRS->TextureSet(0, m_nManStateTempTextureID);
+            m_pRS->DrawBuffer(m_nVBufID, sizeof(BI_COLOR_VERTEX), m_nIBufID, nStartV, m_nManStateTempSquareQ * 4, nStartI,
+                              m_nManStateTempSquareQ * 2, "battle_blendcolorRectangle");
+        }
+        nStartV += m_nManStateTempSquareQ * 4;
 
         //
         if (m_nManStateSquareQ > 0)
@@ -121,7 +131,7 @@ void BIManSign::Draw()
                               m_nManStateSquareQ * 2, "battle_colorRectangle");
         }
         nStartV += m_nManStateSquareQ * 4;
-
+		
         //
         if (m_nGunChargeSquareQ > 0)
         {
@@ -173,6 +183,16 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
     FULLRECT(m_rManEnergyUV);
     ZERROPOINT(m_pntManEnergyOffset);
     FILLPOINT(m_pntManEnergyIconSize, 128, 128);
+
+	m_nManStateTempTextureID = -1;
+	m_dwManHPTempColor = ARGB(255, 128, 128, 128);
+	m_dwManEnergyTempColor = ARGB(255, 128, 128, 128);
+	FULLRECT(m_rManHPTempUV);
+    ZERROPOINT(m_pntManHPTempOffset);
+    FILLPOINT(m_pntManHPTempIconSize, 128, 128);
+    FULLRECT(m_rManEnergyTempUV);
+    ZERROPOINT(m_pntManEnergyTempOffset);
+    FILLPOINT(m_pntManEnergyTempIconSize, 128, 128);
 
     m_nGunChargeTextureID = -1;
     m_dwGunChargeColor = ARGB(255, 128, 128, 128);
@@ -258,6 +278,31 @@ void BIManSign::Init(ATTRIBUTES *pRoot, ATTRIBUTES *pA)
         pcTmp = pA->GetAttribute("manenergyiconsize");
         if (pcTmp)
             sscanf(pcTmp, "%f,%f", &m_pntManEnergyIconSize.x, &m_pntManEnergyIconSize.y);
+
+		pcTmp = pA->GetAttribute("manstatetemptexturename");
+        if (pcTmp)
+            m_nManStateTempTextureID = m_pRS->TextureCreate(pcTmp);
+		m_dwManHPTempColor = pA->GetAttributeAsDword("manhptempcolor", m_dwManHPTempColor);
+		m_dwManEnergyTempColor = pA->GetAttributeAsDword("manenergytempcolor", m_dwManEnergyTempColor);
+		pcTmp = pA->GetAttribute("manhptempuv");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f,%f,%f", &m_rManHPTempUV.left, &m_rManHPTempUV.top, &m_rManHPTempUV.right, &m_rManHPTempUV.bottom);
+        pcTmp = pA->GetAttribute("manhptempoffset");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_pntManHPTempOffset.x, &m_pntManHPTempOffset.y);
+        pcTmp = pA->GetAttribute("manhptempiconsize");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_pntManHPTempIconSize.x, &m_pntManHPTempIconSize.y);
+        pcTmp = pA->GetAttribute("manenegrytempuv");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f,%f,%f", &m_rManEnergyTempUV.left, &m_rManEnergyTempUV.top, &m_rManEnergyTempUV.right,
+                   &m_rManEnergyTempUV.bottom);
+        pcTmp = pA->GetAttribute("manenegrytempoffset");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_pntManEnergyTempOffset.x, &m_pntManEnergyTempOffset.y);
+        pcTmp = pA->GetAttribute("manenergytempiconsize");
+        if (pcTmp)
+            sscanf(pcTmp, "%f,%f", &m_pntManEnergyTempIconSize.x, &m_pntManEnergyTempIconSize.y);
 
         pcTmp = pA->GetAttribute("gunchargetexturename");
         if (pcTmp)
@@ -446,6 +491,8 @@ void BIManSign::Release()
     STORM_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     // TEXTURE_RELEASE( m_pRS, m_nShipTextureID );
+	if(m_nManStateTempTextureID != -1)
+		TEXTURE_RELEASE(m_pRS, m_nManStateTempTextureID);
     TEXTURE_RELEASE(m_pRS, m_nManStateTextureID);
     TEXTURE_RELEASE(m_pRS, m_nGunChargeTextureID);
     VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
@@ -455,6 +502,7 @@ void BIManSign::Release()
     m_nSquareQ = 0;
     m_nBackSquareQ = 0;
     m_nManStateSquareQ = 0;
+	m_nManStateTempSquareQ = 0;
     m_nGunChargeSquareQ = 0;
     m_nGunReloadSquareQ = 0;
 }
@@ -471,6 +519,8 @@ int32_t BIManSign::CalculateManQuantity()
         m_Man[n].nSlotIndex = -1;
         m_Man[n].fHealth = 0.f;
         m_Man[n].fEnergy = 0.f;
+		m_Man[n].fHealthTemp = 0.f;
+        m_Man[n].fEnergyTemp = 0.f;
         m_Man[n].bAlarm = false;
         m_Man[n].nShootMax = 4;
         m_Man[n].nShootCurrent = 0;
@@ -500,13 +550,14 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
 {
     m_nBackSquareQ = nShipQ;
     m_nManStateSquareQ = nShipQ * 2;
+	m_nManStateTempSquareQ = nShipQ * 2;
     m_nGunChargeSquareQ = nShipQ * 2;
     m_nGunReloadSquareQ = nShipQ;
     const auto nManSquareQ = nShipQ;
     const int32_t nAlarmSquareQ = (m_bIsAlarmOn && (nShipQ > 0)) ? 1 : 0;
 
     const auto nMaxSquareQ =
-        std::max({m_nBackSquareQ, m_nManStateSquareQ, m_nGunChargeSquareQ, m_nGunReloadSquareQ, nManSquareQ});
+        std::max({m_nBackSquareQ, m_nManStateSquareQ, m_nManStateTempSquareQ, m_nGunChargeSquareQ, m_nGunReloadSquareQ, nManSquareQ});
 
     if (m_nMaxSquareQ != nMaxSquareQ)
     {
@@ -517,11 +568,11 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
         FillIndexBuffer();
     }
 
-    if ((m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + m_nGunReloadSquareQ + nManSquareQ +
+    if ((m_nBackSquareQ + m_nManStateSquareQ + m_nManStateTempSquareQ + m_nGunChargeSquareQ + m_nGunReloadSquareQ + nManSquareQ +
          nAlarmSquareQ) != m_nSquareQ)
     {
         m_nSquareQ =
-            m_nBackSquareQ + m_nManStateSquareQ + m_nGunChargeSquareQ + m_nGunReloadSquareQ + nManSquareQ + nAlarmSquareQ;
+            m_nBackSquareQ + m_nManStateSquareQ + m_nManStateTempSquareQ + m_nGunChargeSquareQ + m_nGunReloadSquareQ + nManSquareQ + nAlarmSquareQ;
         VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
         m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * sizeof(BI_COLOR_VERTEX),
                                               D3DUSAGE_WRITEONLY);
@@ -588,13 +639,19 @@ void BIManSign::FillVertexBuffer()
         // state (HP & Energy)
         for (n = 0; n < m_nManQuantity; n++)
         {
+			vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPTempUV, m_dwManHPTempColor,
+                                                 m_Man[n].pntPos + m_pntManHPTempOffset, m_pntManHPTempIconSize,
+                                                 GetProgressManHPTemp(n), 0.f, 0.f, 0.f);
+			vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyTempUV, m_dwManEnergyTempColor,
+                                                 m_Man[n].pntPos + m_pntManEnergyTempOffset, m_pntManEnergyTempIconSize,
+                                                 GetProgressManEnergyTemp(n), 0.f, 0.f, 0.f);
             vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPUV, m_dwManStateColor,
                                                  m_Man[n].pntPos + m_pntManHPOffset, m_pntManHPIconSize,
                                                  GetProgressManHP(n), 0.f, 0.f, 0.f);
             vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyUV, m_dwManStateColor,
                                                  m_Man[n].pntPos + m_pntManEnergyOffset, m_pntManEnergyIconSize,
                                                  GetProgressManEnergy(n), 0.f, 0.f, 0.f);
-        }
+		}
 
         // Gun charge status
         for (n = 0; n < m_nManQuantity; n++)
@@ -755,6 +812,20 @@ float BIManSign::GetProgressManEnergy(int32_t nIdx) const
     return 1.f - m_Man[nIdx].fEnergy;
 }
 
+float BIManSign::GetProgressManHPTemp(int32_t nIdx) const
+{
+    if (nIdx < 0 || nIdx >= m_nManQuantity)
+        return 1.f;
+    return 1.f - m_Man[nIdx].fHealthTemp;
+}
+
+float BIManSign::GetProgressManEnergyTemp(int32_t nIdx) const
+{
+    if (nIdx < 0 || nIdx >= m_nManQuantity)
+        return 1.f;
+    return 1.f - m_Man[nIdx].fEnergyTemp;
+}
+
 float BIManSign::GetProgressGunChargeMax(int32_t nIdx)
 {
     if (nIdx < 0 || nIdx >= m_nManQuantity)
@@ -808,6 +879,10 @@ void BIManSign::CheckDataChange()
         if (FloatACompare(pA, "health", m_Man[n].fHealth))
             m_bMakeVertexFill = true;
         if (FloatACompare(pA, "energy", m_Man[n].fEnergy))
+            m_bMakeVertexFill = true;
+		if (FloatACompare(pA, "healthtemp", m_Man[n].fHealthTemp))
+            m_bMakeVertexFill = true;
+        if (FloatACompare(pA, "energytemp", m_Man[n].fEnergyTemp))
             m_bMakeVertexFill = true;
         if (LongACompare(pA, "shootMax", m_Man[n].nShootMax))
             m_bMakeVertexFill = true;

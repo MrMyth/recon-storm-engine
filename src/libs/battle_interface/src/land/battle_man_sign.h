@@ -50,6 +50,8 @@ class BIManSign
 
     float GetProgressManHP(int32_t nIdx) const;
     float GetProgressManEnergy(int32_t nIdx) const;
+	float GetProgressManHPTemp(int32_t nIdx) const;
+    float GetProgressManEnergyTemp(int32_t nIdx) const;
     float GetProgressGunChargeMax(int32_t nIdx);
     float GetProgressGunCharge(int32_t nIdx);
     float GetProgressGunReloadBar(int32_t nIdx);
@@ -106,6 +108,17 @@ class BIManSign
     BIFPOINT m_pntManEnergyOffset;
     FPOINT m_pntManEnergyIconSize;
 
+	int32_t m_nManStateTempTextureID;
+    int32_t m_nManStateTempSquareQ;
+	uint32_t m_dwManHPTempColor;
+	uint32_t m_dwManEnergyTempColor;
+	FRECT m_rManHPTempUV;
+    BIFPOINT m_pntManHPTempOffset;
+    FPOINT m_pntManHPTempIconSize;
+	FRECT m_rManEnergyTempUV;
+    BIFPOINT m_pntManEnergyTempOffset;
+    FPOINT m_pntManEnergyTempIconSize;
+
     int32_t m_nGunChargeTextureID;
     int32_t m_nGunChargeSquareQ;
     uint32_t m_dwGunChargeColor;
@@ -140,6 +153,8 @@ class BIManSign
         int32_t nCharacterIndex;
         float fHealth;
         float fEnergy;
+		float fHealthTemp;
+		float fEnergyTemp;
         bool bAlarm;
         int32_t nShootMax;
         int32_t nShootCurrent;
