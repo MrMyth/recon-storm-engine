@@ -2352,6 +2352,54 @@ void XINTERFACE::MouseMove()
 		auto *pOldNode = m_pCurNode;
 
         m_pCurToolTipNode = nullptr;
+
+        // AlexBlade - Find node by backward drawing order
+        std::vector<CINODE *> _nodeList;
+        auto xFind = fXMousePos + m_lXMouse;
+        auto yFind = fYMousePos + m_lYMouse;
+        pNod = m_pNodes;
+        while (pNod)
+        {
+            if ((xFind >= pNod->m_rect.left) && (xFind <= pNod->m_rect.right) && (yFind >= pNod->m_rect.top) &&
+                (yFind <= pNod->m_rect.bottom))
+            {
+                _nodeList.push_back(pNod);
+            }
+            else if (pNod->m_list)
+            {
+                auto *const pInsideNod = pNod->m_list->FindNode(xFind, yFind);
+                if (pInsideNod)
+                    _nodeList.push_back(pInsideNod);
+            }
+            pNod = pNod->m_next;
+        }
+
+        for (auto it = _nodeList.rbegin(); it != _nodeList.rend(); it++)
+        {
+            pNod = *it;
+            if (pNod->m_bUse)
+            {
+                // evganat - отмена выбора по наведению мыши
+                if (pNod == pOldNode)
+                {
+                    bUnselect = false;
+                }
+                if (!m_pCurToolTipNode && pNod->CheckByToolTip(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse))
+                    m_pCurToolTipNode = pNod;
+                if (!pNod->m_bLockedNode)
+                {
+                    if (pNod->m_bSelected)
+                        pNod->MouseThis(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
+                    if (pNod->m_bMouseSelect && pNod->m_bSelected)
+                    {
+                        bUnselect = false;
+                        SetCurNode(pNod);
+                        break;
+                    }
+                }
+            }
+        }
+        /*
         pNod = m_pNodes ? m_pNodes->FindNode(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse) : nullptr;
         while (pNod != nullptr)
         {
@@ -2380,6 +2428,7 @@ void XINTERFACE::MouseMove()
                 break;
             pNod = pNod->m_next->FindNode(fXMousePos + m_lXMouse, fYMousePos + m_lYMouse);
         }
+        */
         // evganat - отмена выбора по наведению мыши
 		if(pOldNode != nullptr && pOldNode->m_bMouseUnselect && bUnselect && pOldNode == m_pCurNode)
 			m_pCurNode = nullptr;
