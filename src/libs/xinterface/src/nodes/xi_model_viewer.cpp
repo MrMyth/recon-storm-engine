@@ -42,6 +42,8 @@ CXI_MODELVIEWER::CXI_MODELVIEWER()
     minCamDistanceCoef = 0.3;
     maxCamDistanceCoef = 1.7;
     camZoomCoef = 1.0;
+    m_bDrag = false;
+    m_pcDragControlName = nullptr;
 
     translateCoef = 0.0;
 }
@@ -87,10 +89,10 @@ void CXI_MODELVIEWER::Draw(bool bSelected, uint32_t Delta_Time)
             m_rs->DrawPrimitiveUP(D3DPT_TRIANGLESTRIP, XI_ONETEX_FVF, 2, m_v, sizeof(XI_ONETEX_VERTEX), "iVideo");
         }
 
-        if (m_bDrag && m_CamIsSetted)
+        if (m_bDrag && m_pcDragControlName && m_CamIsSetted)
         {
             CONTROL_STATE cs;
-            core.Controls->GetControlState("IRClick", cs);
+            core.Controls->GetControlState(m_pcDragControlName, cs);
             if (cs.state == CST_INACTIVE || cs.state == CST_INACTIVATED)
                 m_bDrag = false;
 
@@ -330,6 +332,7 @@ void CXI_MODELVIEWER::ReleaseAll()
 int CXI_MODELVIEWER::CommandExecute(int wActCode)
 {
     int i;
+    CONTROL_STATE cs;
     if (m_bUse)
     {
         int32_t nWeel = 0;
@@ -345,12 +348,23 @@ int CXI_MODELVIEWER::CommandExecute(int wActCode)
     {
         switch (wActCode)
         {
+            case ACTION_MOUSECLICK:
+                core.Controls->GetControlState("ILClick", cs);
+                if (cs.state == CST_ACTIVATED)
+                {
+                    m_bDrag = true;
+                    m_pcDragControlName = "ILClick";
+                    const auto pntMouse = ptrOwner->GetMousePoint();
+                    m_curMousePos = pntMouse;
+                    HandleMouseMove();
+                }
+                break;
             case ACTION_MOUSERCLICK:
-                CONTROL_STATE cs;
                 core.Controls->GetControlState("IRClick", cs);
                 if (cs.state == CST_ACTIVATED)
                 {
                     m_bDrag = true;
+                    m_pcDragControlName = "IRClick";
                     const auto pntMouse = ptrOwner->GetMousePoint();
                     m_curMousePos = pntMouse;
                     HandleMouseMove();
@@ -645,11 +659,22 @@ uint32_t CXI_MODELVIEWER::MessageProc(int32_t msgcode, MESSAGE &message)
             skyEntId = message.EntityID();
         }
         break;
-        case 4: //Update camera translation
+        case 4: //Update camera translation (or zoom)
         {
-            translateCoef = message.Float();
-
-            UpdateCameraPosition();
+            auto comName = message.String();
+            if (comName == "translate")
+            {
+                translateCoef = message.Float();
+                UpdateCameraPosition();
+            }
+            else if (comName == "zoom_in")
+            {
+                HandleMouseWheel(1);
+            }
+            else if (comName == "zoom_out")
+            {
+                HandleMouseWheel(-1);
+            }
         }
         break;
         case 5: // Move the picture to a new position

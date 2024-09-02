@@ -67,6 +67,7 @@ class CXI_MODELVIEWER : public CINODE
     uint32_t m_dwBlindMax;
 
     bool m_bDrag;
+    const char* m_pcDragControlName;
     FXYPOINT m_curMousePos;
 
     entid_t m_modelId;
