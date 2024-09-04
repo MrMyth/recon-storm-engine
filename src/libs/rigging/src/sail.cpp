@@ -1765,7 +1765,7 @@ void SAIL::DoSailToNewHost(entid_t newModelEI, entid_t newHostEI, int grNum, NOD
         gdata[gn].shipEI = newHostEI;
         gdata[gn].speed_m = 0.f;
         gdata[gn].modelEI = newModelEI;
-        gdata[gn].dwSailsColor = 0xFFFFFFFF;
+        gdata[gn].dwSailsColor = gdata[oldg].dwSailsColor;
         gdata[gn].maxSP = 100;
         delete oldgdata;
         oldgdata = nullptr;
