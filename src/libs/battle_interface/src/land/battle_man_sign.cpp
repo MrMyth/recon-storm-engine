@@ -491,8 +491,7 @@ void BIManSign::Release()
     STORM_DELETE(m_pCommandList);
     TEXTURE_RELEASE(m_pRS, m_nBackTextureID);
     // TEXTURE_RELEASE( m_pRS, m_nShipTextureID );
-	if(m_nManStateTempTextureID != -1)
-		TEXTURE_RELEASE(m_pRS, m_nManStateTempTextureID);
+	TEXTURE_RELEASE(m_pRS, m_nManStateTempTextureID);
     TEXTURE_RELEASE(m_pRS, m_nManStateTextureID);
     TEXTURE_RELEASE(m_pRS, m_nGunChargeTextureID);
     VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
@@ -550,7 +549,7 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
 {
     m_nBackSquareQ = nShipQ;
     m_nManStateSquareQ = nShipQ * 2;
-	m_nManStateTempSquareQ = nShipQ * 2;
+	m_nManStateTempSquareQ = nShipQ;	// * 2;
     m_nGunChargeSquareQ = nShipQ * 2;
     m_nGunReloadSquareQ = nShipQ;
     const auto nManSquareQ = nShipQ;
@@ -641,9 +640,9 @@ void BIManSign::FillVertexBuffer()
 		vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPTempUV, m_dwManHPTempColor,
                                                  m_Man[n].pntPos + m_pntManHPTempOffset, m_pntManHPTempIconSize,
                                                  GetProgressManHPTemp(n), 0.f, 0.f, 0.f);
-		vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyTempUV, m_dwManEnergyTempColor,
+	/*	vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyTempUV, m_dwManEnergyTempColor,
                                                  m_Man[n].pntPos + m_pntManEnergyTempOffset, m_pntManEnergyTempIconSize,
-                                                 GetProgressManEnergyTemp(n), 0.f, 0.f, 0.f);
+                                                 GetProgressManEnergyTemp(n), 0.f, 0.f, 0.f);	*/
 	}
 
         // state (HP & Energy)
