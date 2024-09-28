@@ -3588,6 +3588,22 @@ uint32_t Character::zExMessage(MESSAGE &message)
     {
         return deadName != nullptr;
     }
+    if (storm::iEquals(msg, "IsIntangible"))
+    {
+        if (message.Long() == 1)
+        {
+            radiusNrm = 0.0f;
+            radiusFgt = 0.0f;
+            radius = radiusNrm;
+        }
+        else
+        {
+            radiusNrm = 0.7f;
+            radiusFgt = 1.5f;
+            radius = radiusNrm;
+        }
+        return 1;
+    }
     if (!deadName)
     {
         if (storm::iEquals(msg, "FindDialogCharacter"))

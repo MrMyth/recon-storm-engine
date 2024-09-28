@@ -5,3 +5,4 @@
 .idea
 *.user
 *.bak
+/tools/bsp-patcher/src
