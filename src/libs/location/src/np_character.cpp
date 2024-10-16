@@ -709,38 +709,42 @@ void NPCharacter::UpdateFightCharacter(float dltTime)
           SetEscapeTask(c);
         }*/
         bool bFired = false;
-        if (bTryFire && wantToFire && isFireEnable)
+        if (bTryFire && wantToFire && isFireEnable && (dst < NPC_FIGHT_FIRE_DIST * NPC_FIGHT_FIRE_DIST) && bGunLoaded)
         {
-            if (dst < NPC_FIGHT_FIRE_DIST * NPC_FIGHT_FIRE_DIST &&
-                (dst > NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST))
+			int32_t checkPointBlank = true;
+			if(dst <= NPC_FIGHT_GO_DIST * NPC_FIGHT_GO_DIST)
+			{
+				checkPointBlank = false;
+				VDATA *vd = core.Event("NPC_Event_PointBlank", "i", GetId());
+				if(vd)
+					vd->Get(checkPointBlank);
+			}
+			if(checkPointBlank)
             {
-                if (IsGunLoad())
+                if (l > 0.3)
                 {
-                    if (l > 0.3)
+                    l = 1.0 / sqrt(l);
+                    dx *= l;
+                    dz *= l;
+                    auto ang = static_cast<float>(acos(dz));
+                    if (dx < 0)
+                        ang = -ang;
+                    if (dx * sinf(ay) + dz * cosf(ay) > 0.65f)
                     {
-                        l = 1.0 / sqrt(l);
-                        dx *= l;
-                        dz *= l;
-                        auto ang = static_cast<float>(acos(dz));
-                        if (dx < 0)
-                            ang = -ang;
-                        if (dx * sinf(ay) + dz * cosf(ay) > 0.65f)
+                        // Determine the current goal
+                        const float _ay = ay;
+                        ay = ang;
+                        float kdst;
+                        Character *target = FindGunTarget(kdst, CheckShotOnlyEnemyTest(), true);
+                        // Character * target = FindGunTarget(kdst, true);
+                        ay = _ay;
+                        // if((target == c) || (target && bTryAnyTarget))
+                        if (target)
                         {
-                            // Determine the current goal
-                            const float _ay = ay;
-                            ay = ang;
-                            float kdst;
-                            Character *target = FindGunTarget(kdst, CheckShotOnlyEnemyTest(), true);
-                            // Character * target = FindGunTarget(kdst, true);
-                            ay = _ay;
-                            // if((target == c) || (target && bTryAnyTarget))
-                            if (target)
-                            {
-                                Turn(ang);
-                                Fire();
-                                bFired = true;
-                                fMusketerFireTime = 1.5f;
-                            }
+                            Turn(ang);
+                            Fire();
+                            bFired = true;
+                            fMusketerFireTime = 1.5f;
                         }
                     }
                 }
