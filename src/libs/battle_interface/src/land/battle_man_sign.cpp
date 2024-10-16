@@ -549,7 +549,7 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
 {
     m_nBackSquareQ = nShipQ;
     m_nManStateSquareQ = nShipQ * 2;
-	m_nManStateTempSquareQ = nShipQ;	// * 2;
+	m_nManStateTempSquareQ = nShipQ * 2;
     m_nGunChargeSquareQ = nShipQ * 2;
     m_nGunReloadSquareQ = nShipQ;
     const auto nManSquareQ = nShipQ;
@@ -573,7 +573,7 @@ void BIManSign::UpdateBuffers(int32_t nShipQ)
         m_nSquareQ =
             m_nBackSquareQ + m_nManStateSquareQ + m_nManStateTempSquareQ + m_nGunChargeSquareQ + m_nGunReloadSquareQ + nManSquareQ + nAlarmSquareQ;
         VERTEX_BUFFER_RELEASE(m_pRS, m_nVBufID);
-        m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * sizeof(BI_COLOR_VERTEX),
+        m_nVBufID = m_pRS->CreateVertexBuffer(BI_COLOR_VERTEX_FORMAT, m_nSquareQ * 4 * (sizeof(BI_COLOR_VERTEX)+sizeof(BI_COLOR_VERTEX)%16),
                                               D3DUSAGE_WRITEONLY);
     }
 }
@@ -637,24 +637,24 @@ void BIManSign::FillVertexBuffer()
 
         for (n = 0; n < m_nManQuantity; n++)
         {
-		vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPTempUV, m_dwManHPTempColor,
+			vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPTempUV, m_dwManHPTempColor,
                                                  m_Man[n].pntPos + m_pntManHPTempOffset, m_pntManHPTempIconSize,
                                                  GetProgressManHPTemp(n), 0.f, 0.f, 0.f);
-	/*	vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyTempUV, m_dwManEnergyTempColor,
+			vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyTempUV, m_dwManEnergyTempColor,
                                                  m_Man[n].pntPos + m_pntManEnergyTempOffset, m_pntManEnergyTempIconSize,
-                                                 GetProgressManEnergyTemp(n), 0.f, 0.f, 0.f);	*/
-	}
+                                                 GetProgressManEnergyTemp(n), 0.f, 0.f, 0.f);
+		}
 
         // state (HP & Energy)
         for (n = 0; n < m_nManQuantity; n++)
-	{
+		{
             vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManHPUV, m_dwManStateColor,
                                                  m_Man[n].pntPos + m_pntManHPOffset, m_pntManHPIconSize,
                                                  GetProgressManHP(n), 0.f, 0.f, 0.f);
             vn += WriteSquareToVBuffWithProgress(&pV[vn], m_rManEnergyUV, m_dwManStateColor,
                                                  m_Man[n].pntPos + m_pntManEnergyOffset, m_pntManEnergyIconSize,
                                                  GetProgressManEnergy(n), 0.f, 0.f, 0.f);
-	}
+		}
 
         // Gun charge status
         for (n = 0; n < m_nManQuantity; n++)
