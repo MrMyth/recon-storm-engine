@@ -415,9 +415,13 @@ void InterfaceBackScene::LoadModel(const char *pcModelName)
         m_pLocators = nullptr;
     }
     auto *pGeo = static_cast<VGEOMETRY *>(core.GetService("Geometry"));
+    auto sTexturePath = std::string("RESOURCE\\Textures\\MainMenu\\") + XINTERFACE::pThis->StringService()->GetLanguage() + "\\";
+    if (fio->_FileOrDirectoryExists(sTexturePath.c_str()))
+        sTexturePath = std::string("MainMenu\\") + XINTERFACE::pThis->StringService()->GetLanguage() + "\\";
+    else
+        sTexturePath = std::string("MainMenu\\");
     if (pGeo)
-        pGeo->SetTexturePath(
-            (std::string("MainMenu\\") + XINTERFACE::pThis->StringService()->GetLanguage() + "\\").c_str());
+        pGeo->SetTexturePath(sTexturePath.c_str());
     // create model
     m_eiModel = core.CreateEntity("MODELR");
     core.Send_Message(m_eiModel, "ls", MSG_MODEL_LOAD_GEO, pcModelName);
