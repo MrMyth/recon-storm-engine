@@ -157,7 +157,8 @@ bool WorldMap::Init()
     camera->Init(camAy, camH);
     camera->lock = camLock;
     // create the player's ship
-    ro = CreateModel(new WdmPlayerShip(), "Ship");
+    const char *playerShipModel = AttributesPointer ? AttributesPointer->GetAttribute("playerShipModel") : "Ship";
+    ro = CreateModel(new WdmPlayerShip(), playerShipModel);
     Assert(ro);
     AddLObject(ro, 100);
     auto psX = 50.0f;
