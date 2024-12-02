@@ -251,14 +251,19 @@ void AIShipCannonController::Execute(float fDeltaTime)
 
                 pACurBort->SetAttributeUseFloat("MaxFireDistance", bort.fMaxFireDistance);
                 pACurBort->SetAttributeUseFloat("ChargeRatio", bort.fChargePercent);
-                pACurBort->SetAttributeUseFloat("DamageRatio",
-                                                1.0f - (static_cast<float>(GetBortIntactCannonsNum(bort)) +
-                                                        static_cast<float>(GetBortDisabledCannonsNum(bort))) /
-                                                static_cast<float>(bort.aCannons.size()));
-                //        pACurBort->SetAttributeUseFloat("DamageRatio",
-                //                                        1.0f - static_cast<float>(GetBortIntactCannonsNum(i)) /
-                //                                        static_cast<float>(pBort
-                //                                          ->aCannons.size()));
+
+                int32_t dw_bortIntactCannons = GetBortIntactCannonsNum(bort);
+                int32_t dw_bortDisabledCannons = GetBortDisabledCannonsNum(bort);
+                int32_t dw_bortCannonsQty = bort.aCannons.size();
+                int32_t dw_bortDamagedCannons = dw_bortCannonsQty - dw_bortDisabledCannons - dw_bortIntactCannons;
+                pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                       static_cast<float>(dw_bortDisabledCannons)) /
+                                                                          static_cast<float>(dw_bortCannonsQty));
+                // Disabled cannons
+                pACurBort->SetAttributeUseFloat("DisableRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                        static_cast<float>(dw_bortDamagedCannons)) /
+                                                                           static_cast<float>(dw_bortCannonsQty));
+                       
             }
         }
     }
@@ -890,10 +895,22 @@ void AIShipCannonController::CheckCannonsBoom(float fTmpCannonDamage, const CVEC
             pADamages->SetAttributeUseFloat(str, pC->GetDamage());
             if (pC->isDamaged())
             {
-                pACurBort->SetAttributeUseFloat("DamageRatio",
+                /*pACurBort->SetAttributeUseFloat("DamageRatio",
                                                 1.0f - (static_cast<float>(GetBortIntactCannonsNum(bort)) +
                                                         static_cast<float>(GetBortDisabledCannonsNum(bort))) /
-                                                           static_cast<float>(bort.aCannons.size()));
+                                                static_cast<float>(bort.aCannons.size()));*/
+                int32_t dw_bortIntactCannons = GetBortIntactCannonsNum(bort);
+                int32_t dw_bortDisabledCannons = GetBortDisabledCannonsNum(bort);
+                int32_t dw_bortCannonsQty = bort.aCannons.size();
+                int32_t dw_bortDamagedCannons = dw_bortCannonsQty - dw_bortDisabledCannons - dw_bortIntactCannons;
+                pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                       static_cast<float>(dw_bortDisabledCannons)) /
+                                                                          static_cast<float>(dw_bortCannonsQty));
+                // Disabled cannons
+                pACurBort->SetAttributeUseFloat("DisableRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                        static_cast<float>(dw_bortDamagedCannons)) /
+                                                                           static_cast<float>(dw_bortCannonsQty));
+
                 // aShipBorts[i].dwNumDamagedCannons++;
                 // pACurBort->SetAttributeUseFloat("DamageRatio",
                 //                                1.0f - static_cast<float>(GetBortIntactCannonsNum(i)) /
@@ -931,12 +948,26 @@ void AIShipCannonController::ResearchCannons()
             const float fDamage = pADamages->GetAttributeAsFloat(str, 0.0f);
             pC->SetDamage(fDamage);
             pADamages->SetAttributeUseFloat(str, pC->GetDamage());
+
+            int32_t dw_bortIntactCannons = GetBortIntactCannonsNum(aShipBort);
+            int32_t dw_bortDisabledCannons = GetBortDisabledCannonsNum(aShipBort);
+            int32_t dw_bortCannonsQty = aShipBort.aCannons.size();
+            int32_t dw_bortDamagedCannons = dw_bortCannonsQty - dw_bortDisabledCannons - dw_bortIntactCannons;
+
             if (pC->isDamaged())
             {
                 aShipBort.dwNumDamagedCannons++;
-                pACurBort->SetAttributeUseFloat("DamageRatio",
+                /*pACurBort->SetAttributeUseFloat("DamageRatio",
                                                 1.0f - static_cast<float>(GetBortIntactCannonsNum(aShipBort)) /
-                                                                          static_cast<float>(aShipBort.aCannons.size()));
+                                                                          static_cast<float>(aShipBort.aCannons.size()));*/
+                
+                pACurBort->SetAttributeUseFloat("DamageRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                       static_cast<float>(dw_bortDisabledCannons)) /
+                                                                          static_cast<float>(dw_bortCannonsQty));
+                // Disabled cannons
+                pACurBort->SetAttributeUseFloat("DisableRatio", 1.0f - (static_cast<float>(dw_bortIntactCannons) +
+                                                                        static_cast<float>(dw_bortDamagedCannons)) /
+                                                                           static_cast<float>(dw_bortCannonsQty));
             }
         }
     }

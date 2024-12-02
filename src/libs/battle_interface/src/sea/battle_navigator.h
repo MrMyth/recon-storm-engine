@@ -121,25 +121,30 @@ class BATTLE_NAVIGATOR
     uint32_t m_dwChargeCannon{};
     uint32_t m_dwReadyCannon{};
     uint32_t m_dwDamagedCannon{};
+    uint32_t m_dwDisabledCannon{};
 
     float m_fBegAnglLeftCharge{};
     float m_fCurAnglLeftCharge{};
     float m_fCurAnglLeftDamage{};
+    float m_fCurAnglLeftDisable{};
     float m_fEndAnglLeftCharge{};
 
     float m_fBegAnglRightCharge{};
     float m_fCurAnglRightCharge{};
     float m_fCurAnglRightDamage{};
+    float m_fCurAnglRightDisable{};
     float m_fEndAnglRightCharge{};
 
     float m_fBegAnglForwardCharge{};
     float m_fCurAnglForwardCharge{};
     float m_fCurAnglForwardDamage{};
+    float m_fCurAnglForwardDisable{};
     float m_fEndAnglForwardCharge{};
 
     float m_fBegAnglBackCharge{};
     float m_fCurAnglBackCharge{};
     float m_fCurAnglBackDamage{};
+    float m_fCurAnglBackDisable{};
     float m_fEndAnglBackCharge{};
 
     // ship speed and wind parameters
@@ -182,6 +187,7 @@ class BATTLE_NAVIGATOR
     int32_t m_nvCannonCharge{};
     int32_t m_nvCannonReady{};
     int32_t m_nvCannonDamage{};
+    int32_t m_nvCannonDisable{};
     //--------------------
     int32_t m_idSpeedVBuf{-1};
     int32_t m_nvSpeed{};

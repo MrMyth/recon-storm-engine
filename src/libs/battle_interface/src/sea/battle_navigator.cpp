@@ -125,6 +125,13 @@ void BATTLE_NAVIGATOR::Draw() const
         rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwDamagedCannon);
         rs->DrawPrimitive(D3DPT_TRIANGLEFAN, m_idCannonVBuf, sizeof(BI_ONETEXTURE_VERTEX), n, m_nvCannonDamage,
                           "battle_tf_rectangle");
+        n += m_nvCannonDamage + 2;
+    }
+    if (m_nvCannonDisable > 0)
+    {
+        rs->SetRenderState(D3DRS_TEXTUREFACTOR, m_dwDisabledCannon);
+        rs->DrawPrimitive(D3DPT_TRIANGLEFAN, m_idCannonVBuf, sizeof(BI_ONETEXTURE_VERTEX), n, m_nvCannonDisable,
+                          "battle_tf_rectangle");
     }
 
     // speed indicator
@@ -209,7 +216,7 @@ void BATTLE_NAVIGATOR::Update()
     pV = static_cast<BI_ONETEXTURE_VERTEX *>(rs->LockVertexBuffer(m_idCannonVBuf));
     if (pV != nullptr)
     {
-        m_nvCannonCharge = m_nvCannonReady = m_nvCannonDamage = 0;
+        m_nvCannonCharge = m_nvCannonReady = m_nvCannonDamage = m_nvCannonDisable = 0;
 
         if (!FloatCompare(m_fCurAnglLeftCharge, m_fCurAnglLeftDamage))
         {
@@ -246,7 +253,8 @@ void BATTLE_NAVIGATOR::Update()
                                                          m_fCurAnglBackCharge, m_fBegAnglBackCharge);
         }
 
-        if (FloatCompare(m_fCurAnglLeftCharge, m_fCurAnglLeftDamage))
+        if (FloatCompare(m_fCurAnglLeftCharge, m_fCurAnglLeftDamage) &&
+            !FloatCompare(m_fCurAnglLeftCharge, m_fBegAnglLeftCharge))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge], static_cast<float>(m_XNavigator),
                                      static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
@@ -254,7 +262,8 @@ void BATTLE_NAVIGATOR::Update()
             m_nvCannonReady = SetRectangleSegVertexTex(&pV[m_nvCannonCharge], .5f, .5f, 1.f, 1.f, m_fBegAnglLeftCharge,
                                                        m_fCurAnglLeftCharge);
         }
-        if (FloatCompare(m_fCurAnglRightCharge, m_fCurAnglRightDamage))
+        if (FloatCompare(m_fCurAnglRightCharge, m_fCurAnglRightDamage) &&
+            !FloatCompare(m_fCurAnglRightCharge, m_fBegAnglRightCharge))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady], static_cast<float>(m_XNavigator),
                                      static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
@@ -263,7 +272,8 @@ void BATTLE_NAVIGATOR::Update()
             m_nvCannonReady += SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady], .5f, .5f, 1.f, 1.f,
                                                         m_fCurAnglRightCharge, m_fBegAnglRightCharge);
         }
-        if (FloatCompare(m_fCurAnglForwardCharge, m_fCurAnglForwardDamage))
+        if (FloatCompare(m_fCurAnglForwardCharge, m_fCurAnglForwardDamage) &&
+            !FloatCompare(m_fCurAnglForwardCharge, m_fBegAnglForwardCharge))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady], static_cast<float>(m_XNavigator),
                                      static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
@@ -272,7 +282,8 @@ void BATTLE_NAVIGATOR::Update()
             m_nvCannonReady += SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady], .5f, .5f, 1.f, 1.f,
                                                         m_fBegAnglForwardCharge, m_fCurAnglForwardCharge);
         }
-        if (FloatCompare(m_fCurAnglBackCharge, m_fCurAnglBackDamage))
+        if (FloatCompare(m_fCurAnglBackCharge, m_fCurAnglBackDamage) &&
+            !FloatCompare(m_fCurAnglBackCharge, m_fBegAnglBackCharge))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady], static_cast<float>(m_XNavigator),
                                      static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
@@ -280,49 +291,92 @@ void BATTLE_NAVIGATOR::Update()
             m_nvCannonReady += SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady], .5f, .5f, 1.f, 1.f,
                                                         m_fCurAnglBackCharge, m_fBegAnglBackCharge);
         }
-
-        if (!FloatCompare(m_fCurAnglLeftDamage, m_fEndAnglLeftCharge))
+        // -->
+        if (!FloatCompare(m_fCurAnglLeftDamage, m_fCurAnglLeftDisable))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady], static_cast<float>(m_XNavigator),
                                      static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
-                                     static_cast<float>(m_NavigationWidth), m_fCurAnglLeftDamage, m_fEndAnglLeftCharge);
+                                     static_cast<float>(m_NavigationWidth), m_fCurAnglLeftDamage, m_fCurAnglLeftDisable);
             m_nvCannonDamage = SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady], .5f, .5f, 1.f, 1.f,
-                                                        m_fCurAnglLeftDamage, m_fEndAnglLeftCharge);
+                                                        m_fCurAnglLeftDamage, m_fCurAnglLeftDisable);
         }
-        if (!FloatCompare(m_fCurAnglRightDamage, m_fEndAnglRightCharge))
+        if (!FloatCompare(m_fCurAnglRightDamage, m_fCurAnglRightDisable))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage],
                                      static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
                                      static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
-                                     m_fEndAnglRightCharge, m_fCurAnglRightDamage);
+                                     m_fCurAnglRightDisable, m_fCurAnglRightDamage);
             m_nvCannonDamage +=
-                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage], .5f, .5f, 1.f, 1.f,
-                                         m_fEndAnglRightCharge, m_fCurAnglRightDamage);
+                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage], .5f, .5f, 1.f,
+                                         1.f, m_fCurAnglRightDisable, m_fCurAnglRightDamage);
         }
-        if (!FloatCompare(m_fCurAnglForwardDamage, m_fEndAnglForwardCharge))
+        if (!FloatCompare(m_fCurAnglForwardDamage, m_fCurAnglForwardDisable))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage],
                                      static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
                                      static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
-                                     m_fCurAnglForwardDamage, m_fEndAnglForwardCharge);
+                                     m_fCurAnglForwardDamage, m_fCurAnglForwardDisable);
             m_nvCannonDamage +=
                 SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage], .5f, .5f, 1.f, 1.f,
-                                         m_fCurAnglForwardDamage, m_fEndAnglForwardCharge);
+                                         m_fCurAnglForwardDamage, m_fCurAnglForwardDisable);
         }
-        if (!FloatCompare(m_fCurAnglBackDamage, m_fEndAnglBackCharge))
+        if (!FloatCompare(m_fCurAnglBackDamage, m_fCurAnglBackDisable))
         {
             SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage],
                                      static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
                                      static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
-                                     m_fEndAnglBackCharge, m_fCurAnglBackDamage);
+                                     m_fCurAnglBackDisable, m_fCurAnglBackDamage);
             m_nvCannonDamage +=
+                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage], .5f, .5f, 1.f,
+                                         1.f, m_fCurAnglBackDisable, m_fCurAnglBackDamage);
+        }
+        // <--
+        if (!FloatCompare(m_fCurAnglLeftDisable, m_fEndAnglLeftCharge))
+        {
+            SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage],
+                                     static_cast<float>(m_XNavigator),
+                                     static_cast<float>(m_YNavigator), static_cast<float>(m_NavigationWidth),
+                                     static_cast<float>(m_NavigationWidth), m_fCurAnglLeftDisable,
+                                     m_fEndAnglLeftCharge);
+            m_nvCannonDisable =
                 SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage], .5f, .5f, 1.f, 1.f,
-                                         m_fEndAnglBackCharge, m_fCurAnglBackDamage);
+                                         m_fCurAnglLeftDisable, m_fEndAnglLeftCharge);
+        }
+        if (!FloatCompare(m_fCurAnglRightDisable, m_fEndAnglRightCharge))
+        {
+            SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                     static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
+                                     static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
+                                     m_fEndAnglRightCharge, m_fCurAnglRightDisable);
+            m_nvCannonDisable +=
+                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                         .5f, .5f, 1.f, 1.f, m_fEndAnglRightCharge, m_fCurAnglRightDisable);
+        }
+        if (!FloatCompare(m_fCurAnglForwardDisable, m_fEndAnglForwardCharge))
+        {
+            SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                     static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
+                                     static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
+                                     m_fCurAnglForwardDisable, m_fEndAnglForwardCharge);
+            m_nvCannonDisable +=
+                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                         .5f, .5f, 1.f, 1.f, m_fCurAnglForwardDisable, m_fEndAnglForwardCharge);
+        }
+        if (!FloatCompare(m_fCurAnglBackDisable, m_fEndAnglBackCharge))
+        {
+            SetRectangleSegVertexPos(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                     static_cast<float>(m_XNavigator), static_cast<float>(m_YNavigator),
+                                     static_cast<float>(m_NavigationWidth), static_cast<float>(m_NavigationWidth),
+                                     m_fEndAnglBackCharge, m_fCurAnglBackDisable);
+            m_nvCannonDisable +=
+                SetRectangleSegVertexTex(&pV[m_nvCannonCharge + m_nvCannonReady + m_nvCannonDamage + m_nvCannonDisable],
+                                         .5f, .5f, 1.f, 1.f, m_fEndAnglBackCharge, m_fCurAnglBackDisable);
         }
 
         m_nvCannonCharge -= 2;
         m_nvCannonReady -= 2;
         m_nvCannonDamage -= 2;
+        m_nvCannonDisable -= 2;
 
         rs->UnLockVertexBuffer(m_idCannonVBuf);
     }
@@ -412,6 +466,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_dwChargeCannon = ARGB(255, 255, 0, 0);
     m_dwReadyCannon = ARGB(255, 0, 255, 0);
     m_dwDamagedCannon = ARGB(255, 64, 64, 64);
+    m_dwDisabledCannon = ARGB(255, 72, 72, 72);
 
     // maximum wind speed
     m_fWindMaxStrength = core.Entity_GetAttributeAsFloat(BIUtils::idBattleInterface, "MaxWind", 30.f);
@@ -447,6 +502,8 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_dwChargeCannon = BIUtils::GetIntFromAttr(pARoot, "argbChargeCannonColor", m_dwChargeCannon);
     // color of damaged cannons
     m_dwDamagedCannon = BIUtils::GetIntFromAttr(pARoot, "argbDamageCannonColor", m_dwDamagedCannon);
+    // color of disabled cannons
+    m_dwDisabledCannon = BIUtils::GetIntFromAttr(pARoot, "argbDisableCannonColor", m_dwDisabledCannon);
     // color of the sea
     m_dwSeaColor = BIUtils::GetIntFromAttr(pARoot, "argbSeaColor", ARGB(255, 255, 255, 255));
     // color of the cannon fire zone
@@ -647,7 +704,7 @@ void BATTLE_NAVIGATOR::Init(VDX9RENDER *RenderService, Entity *pOwnerEI)
     m_idCourseVBuf =
         rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, (4 + 4) * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
     m_idCannonVBuf =
-        rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, 7 * 4 * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
+        rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, (7 + 2) * 4 * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
     m_idSpeedVBuf =
         rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, 7 * 2 * sizeof(BI_ONETEXTURE_VERTEX), D3DUSAGE_WRITEONLY);
     m_idMapVBuf = rs->CreateVertexBuffer(BI_ONETEX_VERTEX_FORMAT, (RADIAL_QUANTITY + 3) * sizeof(BI_ONETEXTURE_VERTEX),
@@ -964,12 +1021,14 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
     if (pBortsAttr != nullptr)
     {
         ATTRIBUTES *pTmpAttr;
-        float fCharge, fDamage;
+        float fCharge, fDamage, fDisable;
         // left cannons
         if ((pTmpAttr = pBortsAttr->GetAttributeClass("cannonl")) != nullptr)
         {
             fCharge = pTmpAttr->GetAttributeAsFloat("ChargeRatio", 0);
-            fDamage = pTmpAttr->GetAttributeAsFloat("DamageRatio", 0);
+            fDisable = pTmpAttr->GetAttributeAsFloat("DisableRatio", 0);
+            fDamage = Clamp<float>(pTmpAttr->GetAttributeAsFloat("DamageRatio", 0) + fDisable, 0, 1);
+            m_fCurAnglLeftDisable = GetBetwinFloat(m_fEndAnglLeftCharge, m_fBegAnglLeftCharge, fDisable);
             m_fCurAnglLeftDamage = GetBetwinFloat(m_fEndAnglLeftCharge, m_fBegAnglLeftCharge, fDamage); //~!~
             m_fCurAnglLeftCharge = GetBetwinFloat(m_fBegAnglLeftCharge, m_fCurAnglLeftDamage, fCharge);
         }
@@ -977,7 +1036,9 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
         if ((pTmpAttr = pBortsAttr->GetAttributeClass("cannonr")) != nullptr)
         {
             fCharge = pTmpAttr->GetAttributeAsFloat("ChargeRatio", 0);
-            fDamage = pTmpAttr->GetAttributeAsFloat("DamageRatio", 0);
+            fDisable = pTmpAttr->GetAttributeAsFloat("DisableRatio", 0);
+            fDamage = Clamp<float>(pTmpAttr->GetAttributeAsFloat("DamageRatio", 0) + fDisable, 0, 1);
+            m_fCurAnglRightDisable = GetBetwinFloat(m_fEndAnglRightCharge, m_fBegAnglRightCharge, fDisable);
             m_fCurAnglRightDamage = GetBetwinFloat(m_fEndAnglRightCharge, m_fBegAnglRightCharge, fDamage);
             m_fCurAnglRightCharge = GetBetwinFloat(m_fBegAnglRightCharge, m_fCurAnglRightDamage, fCharge);
         }
@@ -985,7 +1046,9 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
         if ((pTmpAttr = pBortsAttr->GetAttributeClass("cannonf")) != nullptr)
         {
             fCharge = pTmpAttr->GetAttributeAsFloat("ChargeRatio", 0);
-            fDamage = pTmpAttr->GetAttributeAsFloat("DamageRatio", 0);
+            fDisable = pTmpAttr->GetAttributeAsFloat("DisableRatio", 0);
+            fDamage = Clamp<float>(pTmpAttr->GetAttributeAsFloat("DamageRatio", 0) + fDisable, 0, 1);
+            m_fCurAnglForwardDisable = GetBetwinFloat(m_fEndAnglForwardCharge, m_fBegAnglForwardCharge, fDisable);
             m_fCurAnglForwardDamage = GetBetwinFloat(m_fEndAnglForwardCharge, m_fBegAnglForwardCharge, fDamage);
             m_fCurAnglForwardCharge = GetBetwinFloat(m_fBegAnglForwardCharge, m_fCurAnglForwardDamage, fCharge);
         }
@@ -993,7 +1056,9 @@ void BATTLE_NAVIGATOR::SetMainCharacterData()
         if ((pTmpAttr = pBortsAttr->GetAttributeClass("cannonb")) != nullptr)
         {
             fCharge = pTmpAttr->GetAttributeAsFloat("ChargeRatio", 0);
-            fDamage = pTmpAttr->GetAttributeAsFloat("DamageRatio", 0);
+            fDisable = pTmpAttr->GetAttributeAsFloat("DisableRatio", 0);
+            fDamage = Clamp<float>(pTmpAttr->GetAttributeAsFloat("DamageRatio", 0) + fDisable, 0, 1);
+            m_fCurAnglBackDisable = GetBetwinFloat(m_fEndAnglBackCharge, m_fBegAnglBackCharge, fDisable);
             m_fCurAnglBackDamage = GetBetwinFloat(m_fEndAnglBackCharge, m_fBegAnglBackCharge, fDamage);
             m_fCurAnglBackCharge = GetBetwinFloat(m_fBegAnglBackCharge, m_fCurAnglBackDamage, fCharge);
         }
