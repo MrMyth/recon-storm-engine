@@ -1535,7 +1535,7 @@ bool Character::SetFightMode(bool _isFight, bool isPlayAni)
         fgtCurType = fgtSetType = fgt_none;
         fgtCurIndex = fgtSetIndex = -1;
     }
-    core.Event("Character_ChangeFightMode", "ll", isFight, old);
+    core.Event("Character_ChangeFightMode", "ill", GetId(), isFight, old);
     return old;
 }
 
