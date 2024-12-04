@@ -1570,6 +1570,89 @@ uint32_t _AddControlTreeNode(VS_STACK *pS)
     return IFUNCRESULT_OK;
 }
 
+uint32_t _StringFromKey(VS_STACK *pS)
+{
+    std::vector<std::string> argStack;
+    std::string utf8_character;
+    std::string temp_character;
+    size_t index;
+    size_t index_end;
+    VDATA *pInStr;
+    const char *strInStr;
+    int i;
+
+    while (true)
+    {
+        pInStr = (VDATA *)pS->Read();
+        if (!pInStr)
+            return IFUNCRESULT_FAILED;
+        pInStr->Get(strInStr);
+        if (strInStr == NULL)
+        {
+            core.Trace("Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
+            return IFUNCRESULT_FAILED;
+        }
+        utf8_character = std::string(strInStr);
+        index = utf8_character.find_last_of("_");
+        if (index == std::string::npos)
+        {
+            argStack.push_back(utf8_character);
+            pS->Pop();
+        }
+        else
+        {
+            temp_character = utf8_character.substr(index + 1, utf8_character.length() - 1);
+            if (std::find_if(temp_character.begin(), temp_character.end(),
+                             [](unsigned char c) { return !std::isdigit(c); }) == temp_character.end())
+            {
+                pS->Pop();
+                break;
+            }
+            else
+            {
+                argStack.push_back(utf8_character);
+                pS->Pop();
+            }
+        }
+    }
+
+    std::string fileName = utf8_character;
+    fileName.erase(index, fileName.length() - 1);
+    fileName.append(".txt");
+    temp_character = "resource\\ini\\texts\\" + std::string(g_StringServicePointer->GetLanguage()) + "\\";
+                     
+    if (fio->_FileOrDirectoryExists((temp_character + "dialogs\\" + fileName).c_str()))
+        fileName = "dialogs\\" + fileName;
+    else if (fio->_FileOrDirectoryExists((temp_character + "characters\\" + fileName).c_str()))
+        fileName = "characters\\" + fileName;
+
+    const int32_t nLngFileID = g_StringServicePointer->OpenUsersStringFile(fileName.c_str());
+    char *strOutStr = g_StringServicePointer->TranslateFromUsers(nLngFileID, utf8_character.c_str());
+    utf8_character = std::string(strOutStr);
+
+    g_StringServicePointer->CloseUsersStringFile(nLngFileID);
+
+    for (auto &element : argStack)
+    {
+        index = utf8_character.find_last_of("@");
+        index_end = utf8_character.find_last_of(">");
+        if (index != std::string::npos && index_end != std::string::npos)
+            utf8_character.replace(index, index_end - index + 1, element);
+    }
+    
+    argStack.clear();
+
+    auto *pVR = (VDATA *)pS->Push();
+    if (!pVR)
+        return IFUNCRESULT_FAILED;
+    if (strOutStr)
+        pVR->Set(utf8_character.c_str());
+    else
+        pVR->Set("\0");
+
+    return IFUNCRESULT_OK;
+}
+
 //==============================================================
 bool SCRIPT_INTERFACE_FUNCTIONS::Init()
 {
@@ -1747,6 +1830,12 @@ bool SCRIPT_INTERFACE_FUNCTIONS::Init()
     sIFuncInfo.pFuncName = "AddControlTreeNode";
     sIFuncInfo.nArguments = 4;
     sIFuncInfo.pFuncAddress = _AddControlTreeNode;
+    core.SetScriptFunction(&sIFuncInfo);
+
+    sIFuncInfo.pReturnValueName = "string";
+    sIFuncInfo.pFuncName = "StringFromKey";
+    sIFuncInfo.nArguments = 20;
+    sIFuncInfo.pFuncAddress = _StringFromKey;
     core.SetScriptFunction(&sIFuncInfo);
 
     return true;
