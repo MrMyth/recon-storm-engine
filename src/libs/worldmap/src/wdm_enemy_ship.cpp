@@ -150,6 +150,15 @@ void WdmEnemyShip::LRender(VDX9RENDER *rs)
         wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(ix, 0.0f, iz) * 10.0f, 0xff0000 | a);
         wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(sx, 0.0f, sz) * 10.0f, 0x0000ff | a);
         wdmObjects->DrawVector(mtx.Pos(), mtx.Pos() + CVECTOR(dx, 0.0f, dz) * 10.0f, 0xffffff | a);
+        if (isEnemy)
+        {
+            CMatrix mtr;
+            mtr.Pos() = mtx.Pos();
+            mtr.Pos().y = 0.1f;
+            wdmObjects->DrawCircle(mtr, wdmObjects->enemyShipActionRadius, 0x4fff0000);
+            wdmObjects->DrawCircle(mtr, wdmObjects->enemyShipActionRadius * 2, 0x34ff0000);
+            wdmObjects->DrawCircle(mtr, wdmObjects->enemyShipActionRadius * sqrtf(6), 0x1aff0000);
+        }
     }
     WdmShip::LRender(rs);
 }

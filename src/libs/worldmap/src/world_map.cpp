@@ -164,13 +164,16 @@ bool WorldMap::Init()
     auto psX = 50.0f;
     auto psZ = 0.0f;
     auto psAy = 0.0f;
-    auto psRad = 16.0f;
+    float psRad, psEnemyRad, psStormRad;
+    psRad = psEnemyRad = psStormRad = 16.0f;
     if (AttributesPointer)
     {
         psX = AttributesPointer->GetAttributeAsFloat("playerShipX", psX);
         psZ = AttributesPointer->GetAttributeAsFloat("playerShipZ", psZ);
         psAy = AttributesPointer->GetAttributeAsFloat("playerShipAY", psAy);
         psRad = AttributesPointer->GetAttributeAsFloat("playerShipActionRadius", psRad);
+        psEnemyRad = AttributesPointer->GetAttributeAsFloat("enemyShipActionRadius", psEnemyRad);
+        psStormRad = AttributesPointer->GetAttributeAsFloat("stormShipActionRadius", psStormRad);
         wdmObjects->enemyshipViewDistMin =
             AttributesPointer->GetAttributeAsFloat("enemyshipViewDistMin", wdmObjects->enemyshipViewDistMin);
         wdmObjects->enemyshipViewDistMax =
@@ -181,6 +184,7 @@ bool WorldMap::Init()
             AttributesPointer->GetAttributeAsFloat("enemyshipBrnDistMin", wdmObjects->enemyshipBrnDistMin);
         wdmObjects->enemyshipBrnDistMax =
             AttributesPointer->GetAttributeAsFloat("enemyshipBrnDistMax", wdmObjects->enemyshipBrnDistMax);
+        wdmObjects->enemyShipActionRadius = psEnemyRad;
         wdmObjects->stormViewDistMin =
             AttributesPointer->GetAttributeAsFloat("stormViewDistMin", wdmObjects->stormViewDistMin);
         wdmObjects->stormViewDistMax =
@@ -198,6 +202,7 @@ bool WorldMap::Init()
     }
     static_cast<WdmShip *>(ro)->Teleport(psX, psZ, psAy);
     static_cast<WdmPlayerShip *>(ro)->SetActionRadius(psRad);
+    static_cast<WdmPlayerShip *>(ro)->SetStormActionRadius(psStormRad);
     rs->ProgressView();
     // Create a location descriptor
     wdmObjects->islands->SetIslandsData(AttributesPointer, false);
@@ -498,6 +503,7 @@ void WorldMap::Realize(uint32_t delta_time)
         wdmObjects->playerShip->GetPosition(psx, psz, psay);
 #ifndef ENCS_OFF
         core.Event("WorldMap_EncounterCreate", "ffff", encTime, psx, psz, psay);
+        core.Event("WorldMap_ShipRadiusUpdate");
 #endif
         encTime = 0.0f;
     }
@@ -742,6 +748,17 @@ uint32_t WorldMap::AttributeChanged(ATTRIBUTES *apnt)
                 wdmObjects->islands->SetIslandsData(AttributesPointer, true);
                 return 0;
             }
+        }
+    }
+
+    if (storm::iEquals(apnt->GetThisName(), "shipRadiusUpdate"))
+    {
+        if (wdmObjects->playerShip)
+        {
+            auto ps = static_cast<WdmPlayerShip *>(wdmObjects->playerShip);
+            ps->SetActionRadius(AttributesPointer->GetAttributeAsFloat("playerShipActionRadius", ps->GetActionRadius()));
+            ps->SetStormActionRadius(AttributesPointer->GetAttributeAsFloat("stormShipActionRadius", ps->GetStormActionRadius()));
+            wdmObjects->enemyShipActionRadius = AttributesPointer->GetAttributeAsFloat("enemyShipActionRadius", wdmObjects->enemyShipActionRadius);
         }
     }
     return 0;

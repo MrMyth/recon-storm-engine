@@ -86,7 +86,24 @@ void WdmPlayerShip::SetActionRadius(float radius)
     actionRadius = radius;
 }
 
-// Calculations
+float WdmPlayerShip::GetActionRadius()
+{
+    return actionRadius;
+}
+
+void WdmPlayerShip::SetStormActionRadius(float radius)
+{
+    if (radius < 0.0f)
+        radius = 0.0f;
+    stormActionRadius = radius;
+}
+
+float WdmPlayerShip::GetStormActionRadius()
+{
+    return stormActionRadius;
+}
+
+    // Calculations
 void WdmPlayerShip::Update(float dltTime)
 {
     WdmShip::Update(dltTime);
@@ -124,12 +141,13 @@ void WdmPlayerShip::Update(float dltTime)
         }
         // Distance to the ship
         const auto r = ~(es->mtx.Pos() - mtx.Pos());
+        const auto enemyActionRadius = wdmObjects->enemyShipActionRadius;
         // Determine the testing radius
         if (es->isEnemy)
         {
-            if (r < actionRadius * actionRadius * 6.0f)
+            if (r < enemyActionRadius * enemyActionRadius * 6.0f)
             {
-                if (r < actionRadius * actionRadius)
+                if (r < enemyActionRadius * enemyActionRadius)
                 {
                     // Caught up
                     // ((WdmEnemyShip *)wdmObjects->ships[i])->isLive = false;
@@ -145,7 +163,7 @@ void WdmPlayerShip::Update(float dltTime)
                         wdmObjects->enemyShip = es;
                         es->isEntryPlayer = true;
                     }
-                    if (wdmObjects->enemyShip && r < actionRadius * actionRadius * 4.0f)
+                    if (wdmObjects->enemyShip && r < enemyActionRadius * enemyActionRadius * 4.0f)
                     {
                         wdmObjects->enableSkipEnemy = static_cast<WdmEnemyShip *>(wdmObjects->ships[i])->canSkip;
                     }
@@ -243,12 +261,16 @@ void WdmPlayerShip::Update(float dltTime)
 
 void WdmPlayerShip::LRender(VDX9RENDER *rs)
 {
-    WdmShip::LRender(rs);
-    if (wdmObjects->isDebug)
+    if (isWMRender && wdmObjects->isDebug)
     {
-        CMatrix mtx(CVECTOR(0.0f), mtx.Pos());
-        wdmObjects->DrawCircle(mtx, actionRadius, 0x4f0000ff);
+        CMatrix mtr;
+        mtr.Pos() = mtx.Pos();
+        mtr.Pos().y = 0.1f;
+        wdmObjects->DrawCircle(mtr, actionRadius, 0x4f0000ff);
+        wdmObjects->DrawCircle(mtr, stormActionRadius, 0x4fababab); // for storm
     }
+
+    WdmShip::LRender(rs);
 }
 
 bool WdmPlayerShip::ExitFromMap()
@@ -288,7 +310,7 @@ int32_t WdmPlayerShip::TestInStorm() const
     {
         if (wdmObjects->storms[i]->killMe)
             continue;
-        if (wdmObjects->storms[i]->CheckIntersection(mtx.Pos().x, mtx.Pos().z, actionRadius))
+        if (wdmObjects->storms[i]->CheckIntersection(mtx.Pos().x, mtx.Pos().z, stormActionRadius))
         {
             wdmObjects->wm->AttributesPointer->SetAttribute("playerInStorm", "1");
             if (wdmObjects->storms[i]->isTornado)

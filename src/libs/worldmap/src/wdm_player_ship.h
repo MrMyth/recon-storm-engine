@@ -24,6 +24,9 @@ class WdmPlayerShip : public WdmShip
     void PushOutFromIsland();
 
     void SetActionRadius(float radius);
+    void SetStormActionRadius(float radius);
+    float GetActionRadius();
+    float GetStormActionRadius();
 
     // Calculations
     void Update(float dltTime) override;
@@ -50,6 +53,7 @@ class WdmPlayerShip : public WdmShip
   private:
     bool goForward;
     float actionRadius;
+    float stormActionRadius;
     float stormEventTime;
 };
 

@@ -90,6 +90,7 @@ class WdmObjects
 
     WdmEnemyShip *enemyShip;
     bool enableSkipEnemy;
+    float enemyShipActionRadius;
 
     // Storm
     std::vector<WdmStorm *> storms;
