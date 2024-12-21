@@ -1586,13 +1586,22 @@ uint32_t _StringFromKey(VS_STACK *pS)
         pInStr = (VDATA *)pS->Read();
         if (!pInStr)
             return IFUNCRESULT_FAILED;
-        pInStr->Get(strInStr);
-        if (strInStr == NULL)
+        if (!pInStr->Get(strInStr))
         {
-            core.Trace("Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
-            return IFUNCRESULT_FAILED;
+            int32_t intInStr;
+            if (!pInStr->Get(intInStr))
+            {
+                core.Trace("Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
+                return IFUNCRESULT_FAILED;
+            }
+            else
+                utf8_character = std::to_string(intInStr);
         }
-        utf8_character = std::string(strInStr);
+        else
+        {
+            utf8_character = std::string(strInStr);
+        }
+           
         index = utf8_character.find_last_of("_");
         if (index == std::string::npos)
         {
