@@ -446,9 +446,10 @@ void BLADE::GunFire()
             CMatrix resm;
             resm.EqMultiply(perMtx, *(CMatrix *)&lb.m);
             auto rp = perMtx * CVECTOR(lb.m[3][0], lb.m[3][1], lb.m[3][2]);
+            VDATA *m_p = 0;
 
-            core.Send_Message(core.GetEntityId("particles"), "lsffffffl", PS_CREATEX, "gunfire", rp.x, rp.y,
-                              rp.z, resm.Vz().x, resm.Vz().y, resm.Vz().z, 0);
+            core.Send_Message(core.GetEntityId("particles"), "lsffffffle", PS_CREATEX, "gunfire", rp.x, rp.y, rp.z,
+                              resm.Vz().x, resm.Vz().y, resm.Vz().z, 0, m_p);
         }
         else
             core.Trace("MSG_BLADE_GUNFIRE Can't find gun_fire locator");

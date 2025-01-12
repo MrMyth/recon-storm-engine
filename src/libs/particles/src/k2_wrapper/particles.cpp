@@ -52,7 +52,7 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
 
         // Delete a specific system
     case PS_DELETE: {
-        DeleteSystem(message.Long());
+        DeleteSystem(std::stoull(message.String()));
         break;
     }
 
@@ -161,7 +161,11 @@ uint64_t PARTICLES::ProcessMessage(MESSAGE &message)
         pSystem->SetEmitter(pos, angles);
         pSystem->SetDelay(0);
         pSystem->SetLifeTime(lifetime);
-        return (uintptr_t)pSystem;
+        auto sIdPtr = message.ScriptVariablePointer();
+        if (sIdPtr)
+            sIdPtr->Set(std::to_string((uintptr_t)pSystem));
+
+        return 1;
 
         break;
     }
