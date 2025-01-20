@@ -3594,12 +3594,14 @@ uint32_t Character::zExMessage(MESSAGE &message)
         {
             radiusNrm = 0.0f;
             radiusFgt = 0.0f;
+            height = 0.0f;
             radius = radiusNrm;
         }
         else
         {
             radiusNrm = 0.7f;
             radiusFgt = 1.5f;
+            height = 1.8f;
             radius = radiusNrm;
         }
         return 1;
