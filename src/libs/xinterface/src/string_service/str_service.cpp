@@ -1589,9 +1589,9 @@ uint32_t _StringFromKey(VS_STACK *pS)
         if (!pInStr->Get(strInStr))
         {
             int32_t intInStr;
-            if (!pInStr->Get(intInStr))
+            if (!pInStr->Get(intInStr) || strInStr == NULL)
             {
-                core.Trace("Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
+                core.Trace("[StringFromKey] Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
                 return IFUNCRESULT_FAILED;
             }
             else
@@ -1628,15 +1628,37 @@ uint32_t _StringFromKey(VS_STACK *pS)
     std::string fileName = utf8_character;
     fileName.erase(index, fileName.length() - 1);
     fileName.append(".txt");
+
+    const int n = 3;
+    std::string dirNames[n]{"", "characters\\", "dialogs\\"};
+    bool fileNotFound = true;
+
     temp_character = "resource\\ini\\texts\\" + std::string(g_StringServicePointer->GetLanguage()) + "\\";
-                     
-    if (fio->_FileOrDirectoryExists((temp_character + "dialogs\\" + fileName).c_str()))
-        fileName = "dialogs\\" + fileName;
-    else if (fio->_FileOrDirectoryExists((temp_character + "characters\\" + fileName).c_str()))
-        fileName = "characters\\" + fileName;
+
+    for (i = 0; i < n; i++)
+    {
+        if (fio->_FileOrDirectoryExists((temp_character + dirNames[i] + fileName).c_str()))
+        {
+            fileName = dirNames[i] + fileName;
+            fileNotFound = false;
+            break;
+        }
+    }
+    if (fileNotFound)
+    {
+        core.Trace("[StringFromKey] Error: localization file '%s' from key '%s' not found!",
+            (temp_character + fileName).c_str(), utf8_character.c_str());
+        return IFUNCRESULT_FAILED; 
+    }
 
     const int32_t nLngFileID = g_StringServicePointer->OpenUsersStringFile(fileName.c_str());
     char *strOutStr = g_StringServicePointer->TranslateFromUsers(nLngFileID, utf8_character.c_str());
+    if (strOutStr == nullptr)
+    {
+        core.Trace("[StringFromKey] Error: key '%s' in file '%s' not found!",
+            utf8_character.c_str(), (temp_character + fileName).c_str());
+        return IFUNCRESULT_FAILED; 
+    }
     utf8_character = std::string(strOutStr);
 
     g_StringServicePointer->CloseUsersStringFile(nLngFileID);
