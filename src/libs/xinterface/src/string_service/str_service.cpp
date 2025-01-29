@@ -1579,20 +1579,21 @@ uint32_t _StringFromKey(VS_STACK *pS)
     size_t index_end;
     VDATA *pInStr;
     const char *strInStr;
+    int o = pS->GetDataNum();
     int i;
 
-    while (true)
+    for (i = 1; i <= o; i++)
     {
-        pInStr = (VDATA *)pS->Read();
+        pInStr = (VDATA *) pS->Read(0, o - i);
         if (!pInStr)
             return IFUNCRESULT_FAILED;
         if (!pInStr->Get(strInStr))
         {
             int32_t intInStr;
-            if (!pInStr->Get(intInStr) || strInStr == NULL)
+            if (!pInStr->Get(intInStr))
             {
                 core.Trace("[StringFromKey] Error: the first argument of the function 'StringFromKey' is specified incorrectly. check for underscores and numbers at the end of the first argument!");
-                return IFUNCRESULT_FAILED;
+                return IFUNCRESULT_OK;
             }
             else
                 utf8_character = std::to_string(intInStr);
@@ -1606,23 +1607,22 @@ uint32_t _StringFromKey(VS_STACK *pS)
         if (index == std::string::npos)
         {
             argStack.push_back(utf8_character);
-            pS->Pop();
         }
         else
         {
             temp_character = utf8_character.substr(index + 1, utf8_character.length() - 1);
             if (std::find_if(temp_character.begin(), temp_character.end(),
                              [](unsigned char c) { return !std::isdigit(c); }) == temp_character.end())
-            {
-                pS->Pop();
                 break;
-            }
             else
-            {
                 argStack.push_back(utf8_character);
-                pS->Pop();
-            }
         }
+    }
+    pS->Pop();
+    if (utf8_character.find("_") == std::string::npos)
+    {
+        core.Trace("[StringFromKey] Error: key '%s' without symbol '_', fix it pls!", utf8_character.c_str());
+        return IFUNCRESULT_OK;
     }
 
     std::string fileName = utf8_character;
@@ -1648,7 +1648,7 @@ uint32_t _StringFromKey(VS_STACK *pS)
     {
         core.Trace("[StringFromKey] Error: localization file '%s' from key '%s' not found!",
             (temp_character + fileName).c_str(), utf8_character.c_str());
-        return IFUNCRESULT_FAILED; 
+        return IFUNCRESULT_OK; 
     }
 
     const int32_t nLngFileID = g_StringServicePointer->OpenUsersStringFile(fileName.c_str());
@@ -1657,7 +1657,7 @@ uint32_t _StringFromKey(VS_STACK *pS)
     {
         core.Trace("[StringFromKey] Error: key '%s' in file '%s' not found!",
             utf8_character.c_str(), (temp_character + fileName).c_str());
-        return IFUNCRESULT_FAILED; 
+        return IFUNCRESULT_OK; 
     }
     utf8_character = std::string(strOutStr);
 
@@ -1668,7 +1668,11 @@ uint32_t _StringFromKey(VS_STACK *pS)
         index = utf8_character.find_last_of("@");
         index_end = utf8_character.find_last_of(">");
         if (index != std::string::npos && index_end != std::string::npos)
+        {
+            pS->Pop();
             utf8_character.replace(index, index_end - index + 1, element);
+        }
+            
     }
     
     argStack.clear();
